@@ -1,19 +1,21 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Utensils } from "lucide-react"
+import {  HandPlatter as Plate} from "lucide-react"
+import { Link } from "react-router-dom"
 
 const Login = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-neutral-100 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b flex flex-col items-center justify-center p-4">
     {/* Background Pattern */}
     <div className="absolute inset-0 bg-grid-neutral-200/50 bg-[size:20px_20px] pointer-events-none" />
     
     <div className="relative w-full max-w-sm mx-auto">
       {/* Logo and Title */}
       <div className="flex flex-col items-center mb-8">
-        <div className="bg-primary rounded-2xl p-3 mb-4">
-          <Utensils className="w-8 h-8 text-primary-foreground" />
+        <div className="bg-emerald-600 rounded-2xl p-3 mb-4">
+        {/* <Plate className="h-8 w-8 text-emerald-600" /> */}
+          <Plate  className="w-8 h-8 text-primary-foreground" />
         </div>  
         <h1 className="text-2xl font-bold text-neutral-900">Welcome Back to ShareBite</h1>
         <p className="text-neutral-500 mt-2">Sign in to continue sharing</p>
@@ -34,7 +36,7 @@ const Login = () => {
               placeholder="name@example.com"
               className="w-full"
             />
-            <Button className="w-full">
+            <Button className="w-full bg-emerald-600">
               Send Magic Link
             </Button>
           </div>
@@ -75,9 +77,9 @@ const Login = () => {
         <CardFooter>
           <div className="text-sm text-center w-full text-neutral-500">
             Don't have an account?{' '}
-            <a href="#" className="text-primary hover:underline">
+            <Link to="#" className="text-primary hover:underline">
               Sign up
-            </a>
+            </Link>
           </div>
         </CardFooter>
       </Card>
