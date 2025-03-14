@@ -1,13 +1,11 @@
 import "./App.css";
+import Login from "./pages/auth/Login";
 
 
 function App() {
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center bg-white">
-   HIE ITS WORKING
-       
-      </div>
+     <Login/>
     </>
   );
 }
