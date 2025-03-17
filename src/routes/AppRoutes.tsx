@@ -5,7 +5,15 @@ import Signup from "@/pages/auth/Signup";
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import { createBrowserRouter } from "react-router-dom";
-import AuthWrapper from "./ProtectedRoutes/AuthWrapper";
+import AuthWrapper from "@/routes/ProtectedRoutes/AuthWrapper";
+import ProtectedRoute from "@/routes/ProtectedRoutes/ProtectedRoute";
+import DonorDashboard from "@/pages/donor/DonorDashboard";
+import MyDonations from "@/pages/donor/MyDonations";
+import AddDonation from "@/pages/donor/AddDonation";
+import VolunteerDashboard from "@/pages/volunteer/volunteerDashboard";
+import AvailableDonations from "@/pages/volunteer/AvailableDonations";
+import ClaimedDonations from "@/pages/volunteer/ClaimedDonations";
+import Unauthorized from "@/pages/Unauthorized";
 
 
 export const router = createBrowserRouter([
@@ -28,5 +36,34 @@ export const router = createBrowserRouter([
             { path: "signup" , element : <Signup/>}
         ]
     },
-    { path: "*" , element: <NotFound/> }
+    {
+        path: "/donor",
+        element: (
+          <ProtectedRoute role="donor">
+            <MainLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          { path: "dashboard", element: <DonorDashboard /> },
+          { path: "donations", element: <MyDonations /> },
+          { path: "add-donation", element: <AddDonation /> },
+        ],
+    },
+    {
+        path: "/volunteer",
+        element: (
+          <ProtectedRoute role="volunteer">
+            <MainLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          { path: "dashboard", element: <VolunteerDashboard /> },
+          { path: "available-donations", element: <AvailableDonations /> },
+          { path: "claimed-donations", element: <ClaimedDonations /> },
+        ],
+      },
+
+
+    { path: "*" , element: <NotFound/> },
+    { path: "/unauthorized", element: <Unauthorized /> },
 ])
