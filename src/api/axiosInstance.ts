@@ -9,6 +9,8 @@ const axiosInstance = axios.create({
 })
 
 
+
+
 axiosInstance.interceptors.request.use(
     (config) => {
         const token = store.getState().auth.accessToken
@@ -31,7 +33,7 @@ axiosInstance.interceptors.response.use(
             originalRequest._retry = true;
             try {
                 //Try refreshing the access token
-                const { data } = await axiosInstance.get("/auth/refresh"); // returns a new access token 
+                const { data } = await axiosInstance.get("/user/refresh"); // returns a new access token 
                 store.dispatch(setAccessToken(data.accessToken));// update memmory
 
 

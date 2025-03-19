@@ -14,6 +14,7 @@ import VolunteerDashboard from "@/pages/volunteer/volunteerDashboard";
 import AvailableDonations from "@/pages/volunteer/AvailableDonations";
 import ClaimedDonations from "@/pages/volunteer/ClaimedDonations";
 import Unauthorized from "@/pages/Unauthorized";
+import Verify from "@/pages/auth/Verify";
 
 
 export const router = createBrowserRouter([
@@ -30,10 +31,11 @@ export const router = createBrowserRouter([
     },
     {
         path: "/auth",
-        element: <AuthWrapper/>,
+        // element: <AuthWrapper/>,
         children: [
             { path: "login" , element : <Login/>},
-            { path: "signup" , element : <Signup/>}
+            { path: "signup" , element : <Signup/>},
+            { path: "verify" , element : <Verify/>}
         ]
     },
     {

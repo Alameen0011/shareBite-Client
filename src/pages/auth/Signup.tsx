@@ -1,10 +1,50 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { useAuth } from "@/hooks/useAuth"
+import { registerSchema } from "@/validations/auth/register"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Utensils } from "lucide-react"
-import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { Link, useSearchParams } from "react-router-dom"
 
 const Signup = () => {
+      const [searchParams] = useSearchParams()
+      const role = searchParams.get("role")
+      const navigate = useNavigate()
+      const { registerMutation  } = useAuth()
+
+
+       const { mutateAsync:RegisterMutate, isPending } = registerMutation
+   
+
+
+       const {register,handleSubmit,formState: { errors },} = useForm({ resolver: zodResolver(registerSchema) });
+
+
+    const handleUserRegistration =async (data) => {
+      try {
+        const UserData = {
+          ...data,
+          role
+        }
+        
+        const res = await RegisterMutate(UserData) 
+        if(res.success){
+          //toast - please check the email and verify
+          alert(res.message)
+        }
+        
+        
+
+        
+      } catch (error) {
+        console.log(error)
+      }
+
+    }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-neutral-100 flex flex-col items-center justify-center p-4">
     {/* Background Pattern */}
@@ -29,16 +69,29 @@ const Signup = () => {
         </CardHeader>
       
         <CardContent className="space-y-4">
+          <form onSubmit={handleSubmit(handleUserRegistration)}>
           <div className="space-y-2">
             <Input
               type="email"
+              {...register("email")}
+              disabled={isPending}
               placeholder="name@example.com"
               className="w-full"
             />
-            <Button className="w-full">
+                <div className="min-h-[10px]">
+              {errors.email && (
+                <span className="text-red-500 text-sm">
+                  {errors.email.message}
+                </span>
+              )}
+            </div>
+            <Button type="submit" className="w-full">
               Send Magic Link
             </Button>
           </div>
+
+          </form>
+       
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">

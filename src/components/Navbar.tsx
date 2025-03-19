@@ -4,17 +4,32 @@ import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/app/store";
 import { logout } from "@/features/auth/authSlice";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
+  const {logoutMutation} = useAuth()
 
-  const { isAuthenticated , role } = useSelector((state: RootState) => state.auth );
+  const {mutateAsync} = logoutMutation
+
+  const { isAuthenticated  } = useSelector((state: RootState) => state.auth );
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout =async () => {
+    try {
+      
+      dispatch(logout());
+      const res = await mutateAsync()
+      console.log(res,"========res")
+      alert(res.message)
+      
+    } catch (error) {
+      console.log(error)
+    }
+    
+
   };
 
   return (
@@ -44,16 +59,16 @@ const Navbar = () => {
               About
             </Link>
             <Link
-              to="/donate"
+              to="/auth/signup?role=donor"
               className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
             >
-              { `Hi ${role},` }
+              Donate
             </Link>
             <Link
-              to="/contact"
+              to="/donor/dashboard"
               className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
             >
-              Contact
+              Donor page
             </Link>
 
             {isAuthenticated ? (

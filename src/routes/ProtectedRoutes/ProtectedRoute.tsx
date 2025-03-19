@@ -11,11 +11,14 @@ interface ProtectedRouteProps {
 
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role , children }) => {
-
+    console.log("inside protected Router")
     const { isAuthenticated , role:Role } = useSelector(( state: RootState ) => state.auth )
 
+    console.log(isAuthenticated,Role)
+
     if(!isAuthenticated){
-        return <Navigate to = "/auth/login" replace />
+        console.log('you fucked up')
+        return <Navigate to = "/auth/signup" replace />
     }
 
     if( Role !== role ){

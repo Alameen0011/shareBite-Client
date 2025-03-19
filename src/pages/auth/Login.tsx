@@ -1,10 +1,27 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { useAuth } from "@/hooks/useAuth"
+import { loginSchema } from "@/validations/auth/login"
 import {  HandPlatter as Plate} from "lucide-react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom"
 
 const Login = () => {
+    const { loginMutation ,verifyLoginMutation } = useAuth()
+
+    // const {  mutate, isError, error, status ,isPending  } = loginMutation
+    // const {  mutate, isError, error, status   } = verifyLoginMutation
+
+
+    
+      const {register,handleSubmit,formState: { errors },} = useForm({ resolver: zodResolver(loginSchema) });
+  
+
+
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b flex flex-col items-center justify-center p-4">
     {/* Background Pattern */}
@@ -30,16 +47,20 @@ const Login = () => {
         </CardHeader>
       
         <CardContent className="space-y-4">
-          <div className="space-y-2">
+        <form action="">
+        <div className="space-y-2">
             <Input
               type="email"
               placeholder="name@example.com"
               className="w-full"
             />
-            <Button className="w-full bg-emerald-600">
+            <Button type="submit"  className="w-full bg-emerald-600">
               Send Magic Link
             </Button>
           </div>
+
+        </form>
+       
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
