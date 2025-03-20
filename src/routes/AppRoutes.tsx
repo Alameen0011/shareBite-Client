@@ -5,7 +5,7 @@ import Signup from "@/pages/auth/Signup";
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import { createBrowserRouter } from "react-router-dom";
-import AuthWrapper from "@/routes/ProtectedRoutes/AuthWrapper";
+// import AuthWrapper from "@/routes/ProtectedRoutes/AuthWrapper";
 import ProtectedRoute from "@/routes/ProtectedRoutes/ProtectedRoute";
 import DonorDashboard from "@/pages/donor/DonorDashboard";
 import MyDonations from "@/pages/donor/MyDonations";
@@ -15,6 +15,7 @@ import AvailableDonations from "@/pages/volunteer/AvailableDonations";
 import ClaimedDonations from "@/pages/volunteer/ClaimedDonations";
 import Unauthorized from "@/pages/Unauthorized";
 import Verify from "@/pages/auth/Verify";
+import VerifyLogin from "@/pages/auth/VerifyLogin";
 
 
 export const router = createBrowserRouter([
@@ -35,7 +36,8 @@ export const router = createBrowserRouter([
         children: [
             { path: "login" , element : <Login/>},
             { path: "signup" , element : <Signup/>},
-            { path: "verify" , element : <Verify/>}
+            { path: "verify" , element : <Verify/>},
+            { path: "verify-login" , element : <VerifyLogin/>}
         ]
     },
     {

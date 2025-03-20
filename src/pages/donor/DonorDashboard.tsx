@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 
 const DonorDashboard = () => {
   return (
-    <div className="p-20">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="flex  flex-col items-center "> 
       <h1 className="text-2xl font-bold">Donor Dashboard</h1>
       <p className="text-gray-600">Manage your food donations here.</p>
 
@@ -14,6 +15,9 @@ const DonorDashboard = () => {
           Add Donation
         </Link>
       </div>
+
+      </div>
+
     </div>
   );
 };

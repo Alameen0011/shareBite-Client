@@ -1,5 +1,5 @@
 import axiosInstance from "@/api/axiosInstance"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation} from "@tanstack/react-query"
 
 
 export const useAuth = () => {
@@ -11,8 +11,8 @@ export const useAuth = () => {
     })
 
   const verifyRegisterMutation = useMutation({
-        mutationFn:async (tokenData: {token: string}) => {
-           const response = await axiosInstance.post(`/user/verify-register?token=${tokenData.token}`,);
+        mutationFn:async (token: string) => {
+           const response = await axiosInstance.post(`/user/verify-register?token=${token}`,);
            return response.data
         }
     })
@@ -25,8 +25,8 @@ export const useAuth = () => {
     })
 
     const verifyLoginMutation = useMutation({
-        mutationFn: async (tokenData: {token: string}) => {
-            const response = await axiosInstance.post("/user/verify-login",{ params: tokenData })
+        mutationFn: async (token: string) => {
+            const response = await axiosInstance.post(`/user/verify-login?token=${token}`)
             return response.data
         }
     })
@@ -38,6 +38,15 @@ export const useAuth = () => {
         }
     })
 
+    const googleAuthMutation = useMutation({
+        mutationFn: async (googleData) => {
+            const response = await axiosInstance.post(`/user/google-auth`,googleData)
+            return response.data
+        }
+    })
+
+
+
 
 
     return {
@@ -45,7 +54,8 @@ export const useAuth = () => {
         verifyRegisterMutation,
         loginMutation,
         verifyLoginMutation,
-        logoutMutation
+        logoutMutation,
+        googleAuthMutation
     }
     
 

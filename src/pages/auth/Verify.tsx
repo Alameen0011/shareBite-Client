@@ -1,53 +1,54 @@
-import { setAccessToken } from '@/features/auth/authSlice'
-import { useAuth } from '@/hooks/useAuth'
-import { useDispatch } from 'react-redux'
-import { useSearchParams } from 'react-router-dom'
+import { useEffect } from "react";
+import { setAccessToken } from "@/features/auth/authSlice";
+import { useAuth } from "@/hooks/useAuth";
+import { useDispatch } from "react-redux";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { FC } from "react";
 
-const Verify = () => {
-  
+const Verify: FC = () => {
     const [searchParams] = useSearchParams()
     const dispatch = useDispatch()
+    const navigate = useNavigate() 
 
-    const token = searchParams.get("token")
-    console.log(searchParams,"search params")
-    console.log(token,"token")
-    const { verifyRegisterMutation} = useAuth()
-    const {  mutateAsync:VerifyRegisterMutate } = verifyRegisterMutation
+    const token = searchParams.get("token");
+    console.log(searchParams, "search params");
+    console.log(token, "token");
 
+    const { verifyRegisterMutation } = useAuth();
+    const { mutateAsync: verifyRegisterMutate } = verifyRegisterMutation;
 
-    const handleRegisterVerification =async () => {
-        const verifyData = {
-            token:token
+    useEffect(() => {
+        if (!token) {
+            console.log("No token found in URL");
+            return;
         }
-        try {
 
-            const res = await VerifyRegisterMutate(verifyData)
-            console.log(res,"response after verification")
-            if(res.success){
-                alert(res.message)
-                const {token,role} = res
-                const data = {
-                    token,
-                    role
+        const handleRegisterVerification = async () => {
+            try {
+                const res = await verifyRegisterMutate(token);
+                if (res?.success) {
+                    toast(res?.message || "verified successfully");
+                    const { token, role } = res;
+                    dispatch(setAccessToken({ token, role }));
+                    navigate("/");
                 }
-                dispatch(setAccessToken(data))
-                alert("setuped to redux succesfully")
-               
-
+            } catch (error) {
+                console.error("Verification failed", error);
+                toast.error("Verification failed. please try again later")
             }
-            
-        } catch (error) {
-            console.log(error)
-            
-        }
-    }
+        };
 
+        handleRegisterVerification();
+    }, [token, verifyRegisterMutate, dispatch, navigate]);
 
+    return (
+        <div className="flex flex-col items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
+        <p className="text-lg font-semibold mt-2">Verifying your account...</p>
+      </div>
+    );
+};
 
-
-  return (
-    <button className='bg-black text-white'  onClick={handleRegisterVerification} >Verify</button >
-  )
-}
-
-export default Verify
+export default Verify;

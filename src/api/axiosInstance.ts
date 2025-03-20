@@ -33,8 +33,9 @@ axiosInstance.interceptors.response.use(
             originalRequest._retry = true;
             try {
                 //Try refreshing the access token
-                const { data } = await axiosInstance.get("/user/refresh"); // returns a new access token 
-                store.dispatch(setAccessToken(data.accessToken));// update memmory
+                const { data } = await axiosInstance.get("/user/refresh"); // returns a new access token
+                const {token,role}  = data
+                store.dispatch(setAccessToken({token,role}));// update memmory
 
 
                 //Retry the failed request with new token

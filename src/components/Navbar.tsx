@@ -1,29 +1,34 @@
 import { useState } from "react";
 import { HandPlatter as Plate, Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/app/store";
 import { logout } from "@/features/auth/authSlice";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
   const {logoutMutation} = useAuth()
 
+  const navigate = useNavigate()
+
   const {mutateAsync} = logoutMutation
 
-  const { isAuthenticated  } = useSelector((state: RootState) => state.auth );
+  const { isAuthenticated,role  } = useSelector((state: RootState) => state.auth );
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
   const handleLogout =async () => {
     try {
-      
       dispatch(logout());
       const res = await mutateAsync()
       console.log(res,"========res")
-      alert(res.message)
+      if(res.success){
+        toast(res.message)
+        navigate('/')
+      } 
       
     } catch (error) {
       console.log(error)
@@ -58,18 +63,73 @@ const Navbar = () => {
             >
               About
             </Link>
-            <Link
-              to="/auth/signup?role=donor"
-              className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
-            >
-              Donate
-            </Link>
-            <Link
+            {
+              !isAuthenticated ? (
+                <Link
+                to="/auth/signup?role=donor"
+                className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
+              >
+                Donate
+              </Link>
+
+              ): null
+
+            }
+           {
+            role === "donor" ? (
+              <>
+         
+              <Link
               to="/donor/dashboard"
               className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
             >
-              Donor page
+              Donor Dashboard
             </Link>
+              <Link
+              to="/donor/donations"
+              className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
+            >
+              My Donations
+            </Link>
+              <Link
+              to="/donor/add-donation"
+              className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
+            >
+              Add donations
+            </Link>
+            </>
+              
+            ): null
+
+           }
+           {
+            role === "volunteer" ? (
+              <>
+         
+              <Link
+              to="/volunteer/dashboard"
+              className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
+            >
+              Volunteer Dashboard
+            </Link>
+              <Link
+              to="/volunteer/available-donations"
+              className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
+            >
+                Available Donation
+            </Link>
+              <Link
+              to="/volunteer/claimed-donations"
+              className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
+            >
+               claimed Donation
+            </Link>
+            </>
+              
+            ): null
+
+           }
+         
 
             {isAuthenticated ? (
               <button
