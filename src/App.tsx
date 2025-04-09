@@ -13,7 +13,7 @@ function App() {
           style: { background: 'black', color: 'white' }
         }} 
       />
-  <RouterProvider router={router} />;
+  <RouterProvider router={router} />
   </> 
 }
 

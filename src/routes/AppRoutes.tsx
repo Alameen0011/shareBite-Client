@@ -16,6 +16,9 @@ import ClaimedDonations from "@/pages/volunteer/ClaimedDonations";
 import Unauthorized from "@/pages/Unauthorized";
 import Verify from "@/pages/auth/Verify";
 import VerifyLogin from "@/pages/auth/VerifyLogin";
+import AuthWrapper from "./ProtectedRoutes/AuthWrapper";
+import Donation from "@/pages/donor/Donation";
+import EditDonation from "@/pages/donor/EditDonation";
 
 
 export const router = createBrowserRouter([
@@ -32,7 +35,7 @@ export const router = createBrowserRouter([
     },
     {
         path: "/auth",
-        // element: <AuthWrapper/>,
+        element: <AuthWrapper/>,
         children: [
             { path: "login" , element : <Login/>},
             { path: "signup" , element : <Signup/>},
@@ -51,6 +54,8 @@ export const router = createBrowserRouter([
           { path: "dashboard", element: <DonorDashboard /> },
           { path: "donations", element: <MyDonations /> },
           { path: "add-donation", element: <AddDonation /> },
+          { path: "donation/:id", element: <Donation/>},
+          { path: "donations/edit/:id", element: <EditDonation /> },
         ],
     },
     {
