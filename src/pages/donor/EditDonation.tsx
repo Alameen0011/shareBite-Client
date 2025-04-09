@@ -1,73 +1,121 @@
+import { ControlledSelect } from "@/components/Donation/ControlledSelect";
 import LeafletMap from "@/components/Map/LeafletMap";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useDonation } from "@/hooks/useDonation";
+import { useDonation, useSingleDonation } from "@/hooks/useDonation";
+import { IsoToNormalDate } from "@/utils/dateUtils";
 import { handleDonationUpload } from "@/utils/ImageUploadHelper";
-import { donationSchema } from "@/validations/donation/addDonation";
+import { updateDonationSchema } from "@/validations/donation/addDonation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import * as z from "zod";
+import { z } from "zod";
+import { AxiosError } from "axios";
 
-type FormData = z.infer<typeof donationSchema>;
+type UpdateDonationFormData = z.infer<typeof updateDonationSchema>
 
-const AddDonation = () => {
-  {/*React Query hooks */}
-  const { createDonation } = useDonation();
-  const { mutateAsync, isPending,isError } = createDonation;
-  
-  {/*React Hook form */}
-  const { register, handleSubmit,watch,control,setValue,formState: { errors },} = useForm({ resolver: zodResolver(donationSchema), defaultValues: donationSchema.parse({})});
+const EditDonation = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
-  {/*States to manage image preview and map */}
-  const [isMapOpen, setIsMapOpen] = useState(false);
+
+      //Redirect to 404 if no ID is present
+      useEffect(() => {
+        if (!id) {
+          toast.error("Invalid donation ID.");
+          navigate("/404", { replace: true }); 
+        }
+      }, [id, navigate]);
+
+
+  const { updateDonation } = useDonation();
+  const { data: donation } = useSingleDonation(id as string);
+  const { mutateAsync } = updateDonation;
+
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const navigate = useNavigate(); 
+  const [isMapOpen, setIsMapOpen] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    control,
+    reset,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<UpdateDonationFormData>({
+    resolver: zodResolver(updateDonationSchema),
+    defaultValues: {},
+  });
 
 
-  {  /* create donation */}
-  const onSubmit = async (data: FormData) => {
-    console.log("we got the perfect data", data);
+  useEffect(() => {
+    if (!donation || !donation.donation) return;
+  
+    const { type, quantity, expiry: expiryDate, pickupLocation, image } = donation.donation;
+  
+    // Create a strongly typed object for form reset
+    const derived: Partial<UpdateDonationFormData> = {
+      type,
+      quantity,
+      pickupLocation,
+      image,
+    };
+  
+    // Conditionally add expiry
+    if (type !== "non-perishable" && expiryDate) {
+      derived.expiry = IsoToNormalDate(expiryDate);
+    }
+  
+    reset(derived);
+    setImagePreview(image || "");
+  }, [donation, reset]);
+  
+
+  const handleDonationUpdation = async (data: UpdateDonationFormData) => {
+    if (!id) {
+      toast.error("Invalid donation ID");
+      return;
+    }
     try {
-      const res = await mutateAsync(data);
-      console.log(res, ": REsponse from create donation api");
+      const res = await mutateAsync({ data, id });
+      console.log(res);
       if (res?.success) {
-        toast("donated successfully");
-        navigate("/donor/dashboard");
+        toast("Donation updated successfully");
+        navigate("/donor/dashboard")
+        
+      } else {
+        toast.error(res?.message || "updation failed. please try again later");
       }
     } catch (error) {
-      console.log("error creating donation :", error);
-      toast.error("Something went wrong. Please try again.");
+      const axiosError = error as AxiosError<{ message?: string }>;
+    
+      const message =
+        axiosError.response?.data?.message ||
+        axiosError.message ||
+        "Something went wrong. Please try again.";
+    
+      console.error("Error updating donation:", message);
+      toast.error(message);
     }
   };
-
-
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-  
+
     // Show local preview before uploading
     const localUrl = URL.createObjectURL(file);
     setImagePreview(localUrl);
 
-  
     try {
       // Upload to Cloudinary
       const imgUrl = await handleDonationUpload(file);
-      setImagePreview(imgUrl);
       setValue("image", imgUrl);
-      toast.success("image uploaded successfully")
     } catch (error) {
       console.error("Image upload error:", error);
       toast.error("Failed to upload image.");
@@ -79,46 +127,36 @@ const AddDonation = () => {
     setValue("image", ""); // Clear from form
   };
 
-  
-
-  if(isError) return <p>Errorrr</p>
+  const form = watch();
+  console.log(form);
 
   return (
     <div className="space-y-6 m-10">
       <div className="max-w-3xl mx-auto rounded-lg overflow-hidden">
         <div className="px-6 py-8">
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
-            Add donation
+            update Donation
           </h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={handleSubmit(handleDonationUpdation)}
+            className="space-y-6"
+          >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-              {/* Donation Type */}
-              <div className="flex flex-col space-y-1">
-                <Label>Donation Type</Label>
-                <Select
-                  defaultValue={watch("type")}
-                  onValueChange={(value :  "perishable" | "non-perishable" | "cooked" ) =>
-                    setValue("type", value, { shouldValidate: true })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="perishable">Perishable</SelectItem>
-                    <SelectItem value="non-perishable">
-                      Non-Perishable
-                    </SelectItem>
-                    <SelectItem value="cooked">Cooked</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.type && (
-                  <p className="text-red-600 text-sm">{errors.type.message}</p>
-                )}
-              </div>
+              <ControlledSelect
+                name="type"
+                control={control}
+                label="Donation Type"
+                placeholder="Select donation type"
+                errors={errors}
+                options={[
+                  { value: "perishable", label: "Perishable" },
+                  { value: "non-perishable", label: "Non-Perishable" },
+                  { value: "cooked", label: "Cooked" },
+                ]}
+              />
 
               {/* Quantity */}
-              <div className="flex flex-col space-y-1">
+              <div className="flex flex-col space-y-3">
                 <Label>Quantity</Label>
                 <Input
                   type="number"
@@ -176,7 +214,6 @@ const AddDonation = () => {
                   </p>
                 )}
               </div>
-        
 
               {/* Image Upload */}
               <div className="flex flex-col space-y-1 col-span-2">
@@ -211,10 +248,10 @@ const AddDonation = () => {
             <div>
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isSubmitting}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                {isPending ? "Submitting..." : "Donate"}
+                {isSubmitting ? "Submitting..." : "Donate"}
               </Button>
             </div>
           </form>
@@ -244,11 +281,10 @@ const AddDonation = () => {
               </div>
             </div>
           )}
-        
         </div>
       </div>
     </div>
   );
 };
 
-export default AddDonation;
+export default EditDonation;
