@@ -1,15 +1,23 @@
 import "./App.css";
-
+import { RouterProvider } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner"
+import { router } from "@/routes/AppRoutes";
 
 function App() {
-  return (
-    <>
-      <div className="min-h-screen flex items-center justify-center bg-white">
-   HIE ITS WORKING
-       
-      </div>
-    </>
-  );
+
+
+  return <>
+      <Toaster 
+        position="top-right" 
+        toastOptions={{
+          style: { background: 'black', color: 'white' }
+        }} 
+      />
+  <RouterProvider router={router} />;
+  </> 
 }
 
 export default App;
+
+
+
