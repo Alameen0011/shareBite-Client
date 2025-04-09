@@ -11,7 +11,6 @@ import DonorDashboard from "@/pages/donor/DonorDashboard";
 import MyDonations from "@/pages/donor/MyDonations";
 import AddDonation from "@/pages/donor/AddDonation";
 import VolunteerDashboard from "@/pages/volunteer/volunteerDashboard";
-import AvailableDonations from "@/pages/volunteer/AvailableDonations";
 import ClaimedDonations from "@/pages/volunteer/ClaimedDonations";
 import Unauthorized from "@/pages/Unauthorized";
 import Verify from "@/pages/auth/Verify";
@@ -19,6 +18,7 @@ import VerifyLogin from "@/pages/auth/VerifyLogin";
 import AuthWrapper from "./ProtectedRoutes/AuthWrapper";
 import Donation from "@/pages/donor/Donation";
 import EditDonation from "@/pages/donor/EditDonation";
+import VolunteerNavigation from "@/pages/volunteer/VolunteerNavigation";
 
 
 export const router = createBrowserRouter([
@@ -67,7 +67,7 @@ export const router = createBrowserRouter([
         ),
         children: [
           { path: "dashboard", element: <VolunteerDashboard /> },
-          { path: "available-donations", element: <AvailableDonations /> },
+          { path: "navigation", element: <VolunteerNavigation /> },
           { path: "claimed-donations", element: <ClaimedDonations /> },
         ],
       },
