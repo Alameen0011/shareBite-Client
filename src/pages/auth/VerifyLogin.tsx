@@ -1,4 +1,5 @@
 import { setAccessToken } from "@/features/auth/authSlice";
+import { connectSocket } from "@/features/socket/socketSlice";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
@@ -33,6 +34,7 @@ const VerifyLogin = () => {
                   toast(res?.message || "verified successfully");
                   const { token, role } = res;
                   dispatch(setAccessToken({ token, role }));
+                  dispatch(connectSocket({token}))
                   navigate("/donor/dashboard");
               }
                 

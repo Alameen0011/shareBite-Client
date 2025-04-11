@@ -8,7 +8,6 @@ import { createBrowserRouter } from "react-router-dom";
 // import AuthWrapper from "@/routes/ProtectedRoutes/AuthWrapper";
 import ProtectedRoute from "@/routes/ProtectedRoutes/ProtectedRoute";
 import DonorDashboard from "@/pages/donor/DonorDashboard";
-import MyDonations from "@/pages/donor/MyDonations";
 import AddDonation from "@/pages/donor/AddDonation";
 import VolunteerDashboard from "@/pages/volunteer/volunteerDashboard";
 import ClaimedDonations from "@/pages/volunteer/ClaimedDonations";
@@ -19,6 +18,7 @@ import AuthWrapper from "./ProtectedRoutes/AuthWrapper";
 import Donation from "@/pages/donor/Donation";
 import EditDonation from "@/pages/donor/EditDonation";
 import VolunteerNavigation from "@/pages/volunteer/VolunteerNavigation";
+import VolunteerOtp from "@/pages/volunteer/VolunteerOtp";
 
 
 export const router = createBrowserRouter([
@@ -52,7 +52,6 @@ export const router = createBrowserRouter([
         ),
         children: [
           { path: "dashboard", element: <DonorDashboard /> },
-          { path: "donations", element: <MyDonations /> },
           { path: "add-donation", element: <AddDonation /> },
           { path: "donation/:id", element: <Donation/>},
           { path: "donations/edit/:id", element: <EditDonation /> },
@@ -68,6 +67,7 @@ export const router = createBrowserRouter([
         children: [
           { path: "dashboard", element: <VolunteerDashboard /> },
           { path: "navigation", element: <VolunteerNavigation /> },
+          { path: "verifyOtp/:id", element: <VolunteerOtp /> },
           { path: "claimed-donations", element: <ClaimedDonations /> },
         ],
       },

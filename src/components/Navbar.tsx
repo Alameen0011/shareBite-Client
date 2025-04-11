@@ -86,12 +86,6 @@ const Navbar = () => {
               Donor Dashboard
             </Link>
               <Link
-              to="/donor/donations"
-              className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
-            >
-              My Donations
-            </Link>
-              <Link
               to="/donor/add-donation"
               className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
             >
