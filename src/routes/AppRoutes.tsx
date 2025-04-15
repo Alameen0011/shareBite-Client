@@ -19,6 +19,9 @@ import Donation from "@/pages/donor/Donation";
 import EditDonation from "@/pages/donor/EditDonation";
 import VolunteerNavigation from "@/pages/volunteer/VolunteerNavigation";
 import VolunteerOtp from "@/pages/volunteer/VolunteerOtp";
+import VolunteerKioskNavigation from "@/pages/volunteer/VolunteerKioskNavigation";
+import VolunteerKioskOtp from "@/pages/volunteer/VolunteerKioskOtp";
+import DeliverySuccess from "@/pages/volunteer/DeliverySuccess";
 
 
 export const router = createBrowserRouter([
@@ -67,8 +70,10 @@ export const router = createBrowserRouter([
         children: [
           { path: "dashboard", element: <VolunteerDashboard /> },
           { path: "navigation", element: <VolunteerNavigation /> },
+          { path: "kiosk/navigation", element: <VolunteerKioskNavigation /> },
           { path: "verifyOtp/:id", element: <VolunteerOtp /> },
-          { path: "claimed-donations", element: <ClaimedDonations /> },
+          { path: "kiosk/otp/:id", element: <VolunteerKioskOtp /> },
+          { path: "deliverySuccess", element: <DeliverySuccess /> },
         ],
       },
 

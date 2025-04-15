@@ -33,7 +33,9 @@ const VerifyLogin = () => {
                 if (res?.success) {
                   toast(res?.message || "verified successfully");
                   const { token, role } = res;
+                  console.log("Got token from successfull Response", token, role)
                   dispatch(setAccessToken({ token, role }));
+                  console.log("dispatcching to connect socket slice action")
                   dispatch(connectSocket({token}))
                   navigate("/donor/dashboard");
               }

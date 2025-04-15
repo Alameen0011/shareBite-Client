@@ -5,20 +5,19 @@ import L from "leaflet"
 
 type LatLngTuple = [number, number];
 
+interface VolunteerRouteMapProps {
+  pickupLocation: LatLngTuple;
+}
 
 
-
-export default function VolunteerRouteMap({pickupLocation}) {
-    console.log(pickupLocation,"pickup location in volunteer route map +++++++++++++")
-    const Pickup = [pickupLocation[1],pickupLocation[0]]
-//   const volunteerLocation: [number, number] = [10.8505, 76.2711]; // Example
-   const [volunteerLocation, setVolunteerLocation] = useState<LatLngTuple | null>();
-//   const pickupLocation: [number, number] = [ 10.66508,76.25098,];    // From DB
-
+export default function VolunteerRouteMap({pickupLocation} :VolunteerRouteMapProps) {
+  const [volunteerLocation, setVolunteerLocation] = useState<LatLngTuple | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
+  
+  const formattedPickup: LatLngTuple = [pickupLocation[1],pickupLocation[0]]
 
-  console.log(markerRef,"this is marker ref ")
 
+  // Watch volunteer's live location
   useEffect(() => {
     console.log("fetcing of lat and long when compoenent mounts")
     const watchId = navigator.geolocation.watchPosition(
@@ -75,7 +74,7 @@ export default function VolunteerRouteMap({pickupLocation}) {
 //     return () => clearInterval(interval);
 //   }, []);
   
-
+// Animate marker movement when volunteerLocation updates
   useEffect(() => {
     if (markerRef.current && volunteerLocation) {
       const marker = markerRef.current;
@@ -104,9 +103,6 @@ export default function VolunteerRouteMap({pickupLocation}) {
 
 
   if(!volunteerLocation) return <p>Fethcing you location...</p>
-
-
-
   return (
     <MapContainer center={volunteerLocation} zoom={15} style={{ height: "600px", width: "100%" }}>
       <TileLayer
@@ -124,15 +120,13 @@ export default function VolunteerRouteMap({pickupLocation}) {
       </Marker>
 
        {/* Donor Pickup Marker */}
-      <Marker  position={pickupLocation}>
+      <Marker  position={formattedPickup}>
         <Popup>Pickup location</Popup>
       </Marker>
 
         {/* Draw Route */}
-      <LeafletRoute from={volunteerLocation} to={Pickup} />
+      <LeafletRoute from={volunteerLocation} to={formattedPickup} />
 
-        {/* Smooth map movement */}
-        {/* <UpdateMapCenter position={volunteerLocation} /> */}
     </MapContainer>
   );
 }

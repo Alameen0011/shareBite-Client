@@ -6,6 +6,7 @@ import { RootState, AppDispatch } from "@/app/store";
 import { logout } from "@/features/auth/authSlice";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { disconnectSocket } from "@/features/socket/socketSlice";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -27,6 +28,7 @@ const Navbar = () => {
       console.log(res,"========res")
       if(res.success){
         toast(res.message)
+        dispatch(disconnectSocket());
         navigate('/')
       } 
       
@@ -105,12 +107,6 @@ const Navbar = () => {
               className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
             >
               Volunteer Dashboard
-            </Link>
-              <Link
-              to="/volunteer/available-donations"
-              className="text-gray-600 hover:text-emerald-600 transition-colors duration-200"
-            >
-                Available Donation
             </Link>
               <Link
               to="/volunteer/claimed-donations"

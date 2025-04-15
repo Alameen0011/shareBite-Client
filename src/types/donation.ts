@@ -35,8 +35,10 @@ export interface Donation {
     volunteer: string | null;
     kiosk: string | null;
     otp:string
+    createdAt: string;
   // Optional:
-  createdAt?: string;
+  isSocketUpdate?: boolean; //optional flag injected via socket
+  distance?: number;
   updatedAt?: string;
   __v?: number;
 

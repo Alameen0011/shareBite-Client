@@ -17,3 +17,5 @@ export const disconnectionFromSocket = () => {
     socket = null;
   }
 };
+
+console.log("Socket client:",socket)

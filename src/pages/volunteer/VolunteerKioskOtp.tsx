@@ -1,34 +1,21 @@
 import { useVolunteer } from "@/hooks/useVolunteer";
 import { Utensils } from "lucide-react";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
-const VolunteerOtp = () => {
-  const { id: urlParamId } = useParams();
+const VolunteerKioskOtp = () => {
+  const { id } = useParams();
 
-  const location = useLocation();
   const navigate = useNavigate();
 
-  // First check if location.state is available
-  const navState = location.state || JSON.parse(sessionStorage.getItem("donationData") || "{}");
-  const { coordinates, id: stateId } = navState; // Extract the coordinates and donationId from state
-  const donationId = urlParamId || stateId; // Fallback to URL params if stateId is missing
-
-  const { verifyAndPickup } = useVolunteer();
-  const { mutateAsync } = verifyAndPickup;
+  const { verifyAndDeliver } = useVolunteer();
+  const { mutateAsync } = verifyAndDeliver;
 
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const isOtpComplete = otp.every((digit) => digit !== "");
-
-  useEffect(() => {
-    if (!coordinates || !donationId) {
-      toast.error("Missing navigation data. Please go back and try again.");
-      navigate("/volunteer/dashboard");
-    }
-  }, [coordinates, donationId, navigate]);
 
   const handleChange = (index: number, value: string) => {
     if (isNaN(Number(value))) return;
@@ -60,26 +47,22 @@ const VolunteerOtp = () => {
     }
   };
 
-  //handle verification
   const handleVerify = async () => {
     const derivedOtp = otp.join("");
-    const dataToSend = { id: donationId, derivedOtp };
 
     try {
-      const res = await mutateAsync(dataToSend);
+      const res = await mutateAsync({ id, otp: derivedOtp });
+      console.log(res, "response");
       if (res.success) {
-        toast.success("Picked up successfully");
-
-        navigate("/volunteer/kiosk/navigation", {
-          state: {
-             coordinates,
-             id:donationId,
-          },
-        });
+        console.log("success");
+        toast.success("delivered successully");
+        navigate("/volunteer/deliverySuccess");
+      } else {
+        toast.error("something wrong happened");
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong. Try again.");
+      console.log(error, ": verification error");
+      toast.error("something wrong happened");
     }
   };
 
@@ -112,8 +95,8 @@ const VolunteerOtp = () => {
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={handlePaste}
               className="w-12 h-12 border-2 rounded-lg text-center text-xl font-semibold
-                           focus:border-green-500 focus:outline-none transition-colors
-                           mx-1 bg-gray-50"
+                     focus:border-green-500 focus:outline-none transition-colors
+                     mx-1 bg-gray-50"
             />
           ))}
         </div>
@@ -122,11 +105,11 @@ const VolunteerOtp = () => {
           onClick={handleVerify}
           disabled={!isOtpComplete}
           className={`w-full py-3 rounded-lg text-white font-semibold
-                         transition-all duration-200 ${
-                           isOtpComplete
-                             ? "bg-green-600 hover:bg-green-700"
-                             : "bg-gray-300 cursor-not-allowed"
-                         }`}
+                   transition-all duration-200 ${
+                     isOtpComplete
+                       ? "bg-green-600 hover:bg-green-700"
+                       : "bg-gray-300 cursor-not-allowed"
+                   }`}
         >
           Verify OTP
         </button>
@@ -135,4 +118,4 @@ const VolunteerOtp = () => {
   );
 };
 
-export default VolunteerOtp;
+export default VolunteerKioskOtp;

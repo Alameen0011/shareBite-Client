@@ -5,14 +5,13 @@ import { useSelector, useDispatch } from "react-redux";
 
 const useSocketBoot = () => {
   const dispatch = useDispatch();
-  const { accessToken } = useSelector((state: RootState) => state.auth);
+  const { accessToken , role } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    if (accessToken) {
-      console.log("Reconnecting socket with token:", accessToken);
+    if (accessToken && (role === "donor" || role === "volunteer")) {
       dispatch(connectSocket({ token: accessToken }));
     }
-  }, [accessToken, dispatch]);
+  }, [accessToken, dispatch,role]);
 };
 
 export default useSocketBoot;
