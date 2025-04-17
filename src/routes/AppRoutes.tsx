@@ -10,7 +10,6 @@ import ProtectedRoute from "@/routes/ProtectedRoutes/ProtectedRoute";
 import DonorDashboard from "@/pages/donor/DonorDashboard";
 import AddDonation from "@/pages/donor/AddDonation";
 import VolunteerDashboard from "@/pages/volunteer/volunteerDashboard";
-import ClaimedDonations from "@/pages/volunteer/ClaimedDonations";
 import Unauthorized from "@/pages/Unauthorized";
 import Verify from "@/pages/auth/Verify";
 import VerifyLogin from "@/pages/auth/VerifyLogin";
@@ -22,6 +21,7 @@ import VolunteerOtp from "@/pages/volunteer/VolunteerOtp";
 import VolunteerKioskNavigation from "@/pages/volunteer/VolunteerKioskNavigation";
 import VolunteerKioskOtp from "@/pages/volunteer/VolunteerKioskOtp";
 import DeliverySuccess from "@/pages/volunteer/DeliverySuccess";
+import Profile from "@/pages/profile/Profile";
 
 
 export const router = createBrowserRouter([
@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
     {
         path: "/donor",
         element: (
-          <ProtectedRoute role="donor">
+          <ProtectedRoute roles={["donor"]}>
             <MainLayout />
           </ProtectedRoute>
         ),
@@ -63,7 +63,7 @@ export const router = createBrowserRouter([
     {
         path: "/volunteer",
         element: (
-          <ProtectedRoute role="volunteer">
+          <ProtectedRoute  roles={["volunteer"]}>
             <MainLayout />
           </ProtectedRoute>
         ),
@@ -75,6 +75,18 @@ export const router = createBrowserRouter([
           { path: "kiosk/otp/:id", element: <VolunteerKioskOtp /> },
           { path: "deliverySuccess", element: <DeliverySuccess /> },
         ],
+      },
+
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute roles={["volunteer","donor"]} >
+            <MainLayout/>
+            </ProtectedRoute>
+        ),
+        children: [
+          { path: "", element: <Profile/>}
+        ]
       },
 
 

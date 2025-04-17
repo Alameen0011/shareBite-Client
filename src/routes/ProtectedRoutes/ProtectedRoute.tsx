@@ -4,15 +4,15 @@
 
 
 interface ProtectedRouteProps {
-    role: "donor" | "volunteer";
+   roles: ("donor" | "volunteer")[]; 
     children: React.ReactNode;
 }
 
 
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role , children }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ roles , children }) => {
     // console.log("inside protected Router")
-    // const { isAuthenticated , role:Role } = useSelector(( state: RootState ) => state.auth )
+    // const { isAuthenticated , role } = useSelector(( state: RootState ) => state.auth )
 
     // console.log(isAuthenticated,Role)
 
@@ -21,7 +21,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role , children }) => {
     //     return <Navigate to = "/auth/signup" replace />
     // }
 
-    // if( Role !== role ){
+    // if (!roles.includes(role)){
     //     return <Navigate to= "/unauthorized" replace />
     // }
 

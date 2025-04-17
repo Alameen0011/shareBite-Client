@@ -7,6 +7,7 @@ export const initializeSocket = (token: string) => {
     auth: { token },
     transports: ["websocket"],
   });
+  console.log("Socket client:",socket)
 };
 
 export const getSocket = () => socket;
@@ -18,4 +19,3 @@ export const disconnectionFromSocket = () => {
   }
 };
 
-console.log("Socket client:",socket)
