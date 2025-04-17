@@ -19,6 +19,11 @@ import VerifyLogin from "@/pages/auth/VerifyLogin";
 import AuthWrapper from "./ProtectedRoutes/AuthWrapper";
 import Donation from "@/pages/donor/Donation";
 import EditDonation from "@/pages/donor/EditDonation";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import UserManagement from "@/pages/admin/UserManagement";
+import AdminLayout from "@/layouts/AdminLayout";
+import AdminLogin from "@/pages/admin/AdminLogin";
+import KioskManagement from "@/pages/admin/KioskManagement";
 
 
 export const router = createBrowserRouter([
@@ -70,6 +75,27 @@ export const router = createBrowserRouter([
           { path: "available-donations", element: <AvailableDonations /> },
           { path: "claimed-donations", element: <ClaimedDonations /> },
         ],
+      },
+
+      {
+        path: "/admin",
+        element: (
+          <ProtectedRoute role = "volunteer">
+             <AdminLayout/>
+          </ProtectedRoute>
+        ),
+        children: [
+          { path: "dashboard",element: <AdminDashboard /> },
+          { path: "user/management",element: <UserManagement /> },
+          { path: "kiosk/management",element: <KioskManagement /> }
+        ]
+      },
+      {
+        path: "/admin/login",
+        element: <MainLayout />, 
+        children: [
+          { path: "", element: <AdminLogin /> }, 
+        ]
       },
 
 
