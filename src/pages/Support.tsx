@@ -1,31 +1,71 @@
+import { getSocket } from '@/api/socket';
+import { useGetMessages, useMessage } from '@/hooks/useMessage';
 import { Send } from 'lucide-react';
-import React from 'react'
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from 'sonner';
 
 
 interface Message {
-  sender: "me" | "admin";
+  senderId: string
+  receiverId: string;
   text: string;
+  read?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 
-const mockMessages: Message[] = [
-    { sender: "me", text: "Hi, I need help with my donation." },
-    { sender: "admin", text: "Sure, I'm here to assist you!" },
-    { sender: "me", text: "It wasn't picked up yet." },
-    { sender: "admin", text: "Let me check with a volunteer nearby." },
-  ];
   
   const SupportChat = () => {
-    const [messages, setMessages] = useState<Message[]>(mockMessages);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
+
+    const AdminId = "67ff4e383822a164d3d0e300"
+
+    const {data:chatHistory,isLoading,isError} = useGetMessages(AdminId)
+
+    const {sendMessage} = useMessage()
+
+    const { mutateAsync } = sendMessage
+
+    useEffect(() => { 
+      //Fetch chat history 
+      if(chatHistory){
+        console.log(chatHistory,"chat history will []")
+        setMessages(chatHistory)
+      }
+
+    },[chatHistory])
+
+    useEffect(() => {
+      const socket = getSocket(); // your singleton getter
+      if (!socket) return;
+    
+      socket.on("newMessage", (newMsg) => {
+        setMessages((prev) => [...prev, newMsg]);
+      });
+    
+      return () => {
+        socket.off("newMessage"); // cleanup
+      };
+    }, []);
   
-    const sendMessage = () => {
-      if (!input.trim()) return;
+    const handleMessage = async () => {
+      if (input.trim()) {
+        const data = {id:AdminId, text: input}
+
+        console.log(data,"data sending to server")
+        const res = await mutateAsync(data)
+        if(res.success){
+          toast.success("message sended successfully")
+        }
+
+
   
-      const newMsg: Message = { sender: "me", text: input.trim() };
-      setMessages((prev) => [...prev, newMsg]);
-      setInput("");
+        // Optionally add to local state (optimistic UI)
+        setMessages((prevMessages) => [...prevMessages, ]);
+        setInput('');
+      }
     };
   
     return (
@@ -53,7 +93,7 @@ const mockMessages: Message[] = [
               <div
                 key={idx}
                 className={`max-w-[70%] px-4 py-2 rounded-lg text-sm ${
-                  msg.sender === "me"
+                  msg.senderId === "me"
                     ? "bg-blue-100 self-end text-right ml-auto"
                     : "bg-purple-100 self-start text-left mr-auto"
                 }`}
@@ -73,7 +113,7 @@ const mockMessages: Message[] = [
               className="flex-1 border border-purple-300 rounded-l px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
             <button
-              onClick={sendMessage}
+              onClick={handleMessage}
               className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-r"
             >
              <Send  />
