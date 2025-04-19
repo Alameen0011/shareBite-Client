@@ -22,6 +22,8 @@ import VolunteerKioskNavigation from "@/pages/volunteer/VolunteerKioskNavigation
 import VolunteerKioskOtp from "@/pages/volunteer/VolunteerKioskOtp";
 import DeliverySuccess from "@/pages/volunteer/DeliverySuccess";
 import Profile from "@/pages/profile/Profile";
+import VolunteerMessages from "@/pages/volunteer/VolunteerMessages";
+import Support from "@/pages/Support";
 
 
 export const router = createBrowserRouter([
@@ -74,6 +76,7 @@ export const router = createBrowserRouter([
           { path: "verifyOtp/:id", element: <VolunteerOtp /> },
           { path: "kiosk/otp/:id", element: <VolunteerKioskOtp /> },
           { path: "deliverySuccess", element: <DeliverySuccess /> },
+          
         ],
       },
 
@@ -86,6 +89,17 @@ export const router = createBrowserRouter([
         ),
         children: [
           { path: "", element: <Profile/>}
+        ]
+      },
+      {
+        path: "/support",
+        element: (
+          <ProtectedRoute roles={["volunteer","donor"]} >
+            <MainLayout/>
+            </ProtectedRoute>
+        ),
+        children: [
+          { path: "", element: <Support /> },
         ]
       },
 

@@ -64,14 +64,14 @@ const Navbar = () => {
 
           {/* Right-side Role-based + Profile/Login */}
           <div className="hidden md:flex items-center space-x-6 ml-auto pr-2">
-            {role === "donor" && (
+            {isAuthenticated && role === "donor" && (
               <>
                 <Link to="/donor/dashboard" className="text-gray-600 hover:text-emerald-600 transition-colors duration-200">Donor Dashboard</Link>
                 <Link to="/donor/add-donation" className="text-gray-600 hover:text-emerald-600 transition-colors duration-200">Add Donation</Link>
               </>
             )}
 
-            {role === "volunteer" && (
+            {isAuthenticated && role === "volunteer" && (
               <>
                 <Link to="/volunteer/dashboard" className="text-gray-600 hover:text-emerald-600 transition-colors duration-200">Volunteer Dashboard</Link>
               </>
