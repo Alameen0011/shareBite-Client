@@ -6,12 +6,14 @@ import {
   LayoutDashboard,
   Users,
   UserCircle,
+  MessageCircle
 } from "lucide-react";
 
 const menuItems = [
   { icon: <LayoutDashboard size={20} />, label: "Dashboard", path: "/admin/dashboard" },
   { icon: <Users size={20} />, label: "User Management", path: "/admin/user/management" },
   { icon: <LocateIcon size={20} />, label: "Kiosk Management", path: "/admin/kiosk/management" },
+  { icon: <MessageCircle size={20} />, label: "Support", path: "/admin/communications" },
 ];
 
 export default function Sidebar() {

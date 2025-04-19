@@ -24,6 +24,10 @@ import UserManagement from "@/pages/admin/UserManagement";
 import AdminLayout from "@/layouts/AdminLayout";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import KioskManagement from "@/pages/admin/KioskManagement";
+import AddKiosk from "@/pages/admin/AddKiosk";
+import EditKiosk from "@/pages/admin/EditKiosk";
+import AdminSupport from "@/pages/admin/AdminSupport";
+import AdminMessages from "@/pages/admin/AdminMessages";
 
 
 export const router = createBrowserRouter([
@@ -87,7 +91,11 @@ export const router = createBrowserRouter([
         children: [
           { path: "dashboard",element: <AdminDashboard /> },
           { path: "user/management",element: <UserManagement /> },
-          { path: "kiosk/management",element: <KioskManagement /> }
+          { path: "kiosk/management",element: <KioskManagement /> },
+          { path: "addkiosk",element: <AddKiosk /> },
+          { path: "editkiosk/:id",element: <EditKiosk /> },
+          { path: "communications",element: <AdminMessages /> },
+
         ]
       },
       {
