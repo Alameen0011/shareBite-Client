@@ -109,3 +109,16 @@ export const  useGetSingleKiosk = (id:string) => {
         }
     })
 }  
+
+
+
+//Later write this into UseMessage - after merge..? don't know lets figure it out later
+export const useGetUsersMessagedAdmin = () => {
+    return useQuery({
+        queryKey:["mesgs"],
+        queryFn:async () => {
+            const response = await axiosInstance.get("admin/message/users")
+            return response.data
+        }
+    })
+}

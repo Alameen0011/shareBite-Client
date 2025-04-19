@@ -1,4 +1,5 @@
 import { ChatWindow } from '@/components/Admin/ChatWindow';
+import { useGetUsersMessagedAdmin } from '@/hooks/useAdmin';
 // import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react'
 
@@ -7,31 +8,11 @@ const AdminMessages = () => {
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
     // Simulate fetching user list (You could replace with an API call using React Query)
-    // const { data: users, isLoading } = useQuery('users', fetchUsers);
+    const { data: users, isLoading, isError } = useGetUsersMessagedAdmin()
 
-    const users = [
-      {
-        _id:"68w0923lalsiosdwleroqw99",
-        name:"something",
-        role:"donor",
-        status:"online"
-      },
-      {
-        _id:"68w0923laxxkdjwowleroqw99",
-        name:"boss",
-        role:"volunteer",
-         status:"online"
-      },
-      {
-        _id:"68w0923l4839nflssqlleroqw99",
-        name:"hell",
-        role:"volunteer",
-         status:"offline"
-      }
-    ]
 
-    const isLoading = false
-
+    if(isLoading) return <p>loading....</p>
+    if(isError) return <p>Error....</p>
 
   return (
     <div className="flex h-screen bg-gray-100">

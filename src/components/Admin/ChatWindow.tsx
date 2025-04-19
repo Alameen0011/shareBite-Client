@@ -1,41 +1,65 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
+import { toast } from 'sonner';
 
 interface ChatWindowProps {
   userId: string;
 }
 
 interface Message {
-  sender: 'admin' | 'user';
+  senderId: string;
   text: string;
 }
 
 export const ChatWindow = ({ userId }: ChatWindowProps) => {
-  const [message, setMessage] = useState('');
+  const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock initial message loading
-  useEffect(() => {
-    setIsLoading(true);
-    const mockMessages: Message[] = [
-      { sender: 'admin', text: 'Hello! How can I help you today?' },
-      { sender: 'user', text: 'I have a question about my donation.' },
-      { sender: 'admin', text: 'Sure, feel free to ask.' },
-    ];
-    setTimeout(() => {
-      setMessages(mockMessages);
-      setIsLoading(false);
-    }, 500);
-  }, [userId]);
+  const {data: chatHistory } = useGetMessages(userId)
+  const  {sendMessage} = useMessage()
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      const newMessage: Message = {
-        sender: 'admin',
-        text: message,
-      };
-      setMessages((prev) => [...prev, newMessage]);
-      setMessage('');
+  const { mutateAsync } = sendMessage
+
+  useEffect(() => {
+    if(chatHistory){
+      setMessages(chatHistory)
+    }
+
+
+
+  },[chatHistory])
+
+  useEffect(() => {
+    const socket = getSocket();
+    if(!socket) return;
+
+    socket.on("newMessage", (newMsg) => {
+      setMessages((prev) => [...prev, newMsg]);
+    });
+  
+    return () => {
+      socket.off("newMessage"); // cleanup
+    };
+
+  },[])
+
+  
+
+  const handleSendMessage = async () => {
+    if (input.trim()) {
+      const data = {id:userId, text: input}
+
+      console.log(data,"data sending to server")
+      const res = await mutateAsync(data)
+      if(res.success){
+        toast.success("message sended successfully")
+      }
+
+
+
+      // Optionally add to local state (optimistic UI)
+      setMessages((prevMessages) => [...prevMessages, { senderId:userId, text: input } ]);
+      setInput('');
     }
   };
 
@@ -55,11 +79,11 @@ export const ChatWindow = ({ userId }: ChatWindowProps) => {
           messages.map((msg, index) => (
             <div
               key={index}
-              className={`flex ${msg.sender === 'admin' ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${msg.senderId === 'admin' ? 'justify-end' : 'justify-start'}`}
             >
               <div
                 className={`max-w-xs p-3 rounded-lg ${
-                  msg.sender === 'admin' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+                  msg.senderId === 'admin' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
                 }`}
               >
                 {msg.text}
@@ -75,8 +99,8 @@ export const ChatWindow = ({ userId }: ChatWindowProps) => {
           type="text"
           className="flex-1 p-2 rounded-l-lg border"
           placeholder="Type a message..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
         />
         <button
           className="p-2 bg-blue-500 text-white rounded-r-lg"
