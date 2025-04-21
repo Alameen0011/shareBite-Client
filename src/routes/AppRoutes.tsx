@@ -22,7 +22,6 @@ import VolunteerKioskNavigation from "@/pages/volunteer/VolunteerKioskNavigation
 import VolunteerKioskOtp from "@/pages/volunteer/VolunteerKioskOtp";
 import DeliverySuccess from "@/pages/volunteer/DeliverySuccess";
 import Profile from "@/pages/profile/Profile";
-import VolunteerMessages from "@/pages/volunteer/VolunteerMessages";
 import Support from "@/pages/Support";
 
 
