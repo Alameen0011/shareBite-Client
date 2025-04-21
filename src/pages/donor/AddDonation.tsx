@@ -22,20 +22,37 @@ import * as z from "zod";
 type FormData = z.infer<typeof donationSchema>;
 
 const AddDonation = () => {
-  {/*React Query hooks */}
+  {
+    /*React Query hooks */
+  }
   const { createDonation } = useDonation();
-  const { mutateAsync, isPending,isError } = createDonation;
-  
-  {/*React Hook form */}
-  const { register, handleSubmit,watch,control,setValue,formState: { errors },} = useForm({ resolver: zodResolver(donationSchema), defaultValues: donationSchema.parse({})});
+  const { mutateAsync, isPending, isError } = createDonation;
 
-  {/*States to manage image preview and map */}
+  {
+    /*React Hook form */
+  }
+  const {
+    register,
+    handleSubmit,
+    watch,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(donationSchema),
+    defaultValues: donationSchema.parse({}),
+  });
+
+  {
+    /*States to manage image preview and map */
+  }
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
-
-  {  /* create donation */}
+  {
+    /* create donation */
+  }
   const onSubmit = async (data: FormData) => {
     console.log("we got the perfect data", data);
     try {
@@ -51,23 +68,23 @@ const AddDonation = () => {
     }
   };
 
-
+  const someDAta = watch();
+  console.log(someDAta);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-  
-    // Show local preview before uploading
-    const localUrl = URL.createObjectURL(file);
-    setImagePreview(localUrl);
 
-  
+    // Show local preview before uploading
+    // const localUrl = URL.createObjectURL(file);
+    // setImagePreview(localUrl);
+
     try {
       // Upload to Cloudinary
       const imgUrl = await handleDonationUpload(file);
       setImagePreview(imgUrl);
       setValue("image", imgUrl);
-      toast.success("image uploaded successfully")
+      toast.success("image uploaded successfully");
     } catch (error) {
       console.error("Image upload error:", error);
       toast.error("Failed to upload image.");
@@ -79,9 +96,7 @@ const AddDonation = () => {
     setValue("image", ""); // Clear from form
   };
 
-  
-
-  if(isError) return <p>Errorrr</p>
+  if (isError) return <p>Errorrr</p>;
 
   return (
     <div className="space-y-6 m-10">
@@ -92,14 +107,23 @@ const AddDonation = () => {
           </h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+              {/*Title */}
+              <div className="flex flex-col space-y-1">
+                <Label>Food Name</Label>
+                <Input type="text" {...register("title")} placeholder="eg: Chicken biriyani" className="w-full" />
+                {errors.title && (
+                  <p className="text-red-600 text-sm">{errors.title.message}</p>
+                )}
+              </div>
+
               {/* Donation Type */}
               <div className="flex flex-col space-y-1">
                 <Label>Donation Type</Label>
                 <Select
                   defaultValue={watch("type")}
-                  onValueChange={(value :  "perishable" | "non-perishable" | "cooked" ) =>
-                    setValue("type", value, { shouldValidate: true })
-                  }
+                  onValueChange={(
+                    value: "perishable" | "non-perishable" | "cooked"
+                  ) => setValue("type", value, { shouldValidate: true })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
@@ -176,7 +200,6 @@ const AddDonation = () => {
                   </p>
                 )}
               </div>
-        
 
               {/* Image Upload */}
               <div className="flex flex-col space-y-1 col-span-2">
@@ -244,7 +267,6 @@ const AddDonation = () => {
               </div>
             </div>
           )}
-        
         </div>
       </div>
     </div>

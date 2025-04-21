@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useDonation } from "@/hooks/useDonation";
+import { IsoToReadableFormat } from "@/utils/dateUtils";
 import { PlusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -51,15 +52,23 @@ const DonorDashboard = () => {
               <div className="px-5 pb-5">
                 <a href="#">
                   <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                    {donation.status}
+                    {donation.title}
                   </h5>
                 </a>
                 <div className="flex items-center mt-2.5 mb-5">
+                <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                  status:  {donation.status}
+                  </span>
+
                  
                 </div>
+                <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                    {donation.pickupLocation.address}
+                  </h5>
+                
                 <div className="flex items-center justify-between">
                   <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                    $599
+                    {donation.expiry? IsoToReadableFormat(donation.expiry) : "" }
                   </span>
                 </div>
               </div>

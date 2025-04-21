@@ -18,6 +18,7 @@ export interface Donation {
     _id: string;
     pickupLocation: PickupLocation
     donor: Donor
+    title: string;
     type: "cooked" | "non-perishable" | "perishable"
     quantity: number;
     expiry: string | null;
@@ -33,8 +34,11 @@ export interface Donation {
     | "discarded";
     volunteer: string | null;
     kiosk: string | null;
+    otp:string
+    createdAt: string;
   // Optional:
-  createdAt?: string;
+  isSocketUpdate?: boolean; //optional flag injected via socket
+  distance?: number;
   updatedAt?: string;
   __v?: number;
 

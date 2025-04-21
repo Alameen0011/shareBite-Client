@@ -16,21 +16,19 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { AxiosError } from "axios";
 
-type UpdateDonationFormData = z.infer<typeof updateDonationSchema>
+type UpdateDonationFormData = z.infer<typeof updateDonationSchema>;
 
 const EditDonation = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-
-      //Redirect to 404 if no ID is present
-      useEffect(() => {
-        if (!id) {
-          toast.error("Invalid donation ID.");
-          navigate("/404", { replace: true }); 
-        }
-      }, [id, navigate]);
-
+  //Redirect to 404 if no ID is present
+  useEffect(() => {
+    if (!id) {
+      toast.error("Invalid donation ID.");
+      navigate("/404", { replace: true });
+    }
+  }, [id, navigate]);
 
   const { updateDonation } = useDonation();
   const { data: donation } = useSingleDonation(id as string);
@@ -52,29 +50,35 @@ const EditDonation = () => {
     defaultValues: {},
   });
 
-
   useEffect(() => {
     if (!donation || !donation.donation) return;
-  
-    const { type, quantity, expiry: expiryDate, pickupLocation, image } = donation.donation;
-  
+
+    const {
+      title,
+      type,
+      quantity,
+      expiry: expiryDate,
+      pickupLocation,
+      image,
+    } = donation.donation;
+
     // Create a strongly typed object for form reset
     const derived: Partial<UpdateDonationFormData> = {
+      title,
       type,
       quantity,
       pickupLocation,
       image,
     };
-  
+
     // Conditionally add expiry
     if (type !== "non-perishable" && expiryDate) {
       derived.expiry = IsoToNormalDate(expiryDate);
     }
-  
+
     reset(derived);
     setImagePreview(image || "");
   }, [donation, reset]);
-  
 
   const handleDonationUpdation = async (data: UpdateDonationFormData) => {
     if (!id) {
@@ -86,19 +90,18 @@ const EditDonation = () => {
       console.log(res);
       if (res?.success) {
         toast("Donation updated successfully");
-        navigate("/donor/dashboard")
-        
+        navigate("/donor/dashboard");
       } else {
         toast.error(res?.message || "updation failed. please try again later");
       }
     } catch (error) {
       const axiosError = error as AxiosError<{ message?: string }>;
-    
+
       const message =
         axiosError.response?.data?.message ||
         axiosError.message ||
         "Something went wrong. Please try again.";
-    
+
       console.error("Error updating donation:", message);
       toast.error(message);
     }
@@ -142,6 +145,19 @@ const EditDonation = () => {
             className="space-y-6"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+              {/*Title */}
+              <div className="flex flex-col space-y-1">
+                <Label>Food Name</Label>
+                <Input
+                  type="text"
+                  {...register("title")}
+                  placeholder="Chicken biriyani"
+                  className="w-full"
+                />
+                {errors.title && (
+                  <p className="text-red-600 text-sm">{errors.title.message}</p>
+                )}
+              </div>
               <ControlledSelect
                 name="type"
                 control={control}

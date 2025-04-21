@@ -6,6 +6,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { FC } from "react";
+import { connectSocket } from "@/features/socket/socketSlice";
 
 const Verify: FC = () => {
     const [searchParams] = useSearchParams()
@@ -32,6 +33,7 @@ const Verify: FC = () => {
                     toast(res?.message || "verified successfully");
                     const { token, role } = res;
                     dispatch(setAccessToken({ token, role }));
+                    dispatch(connectSocket({token}))
                     navigate("/");
                 }
             } catch (error) {

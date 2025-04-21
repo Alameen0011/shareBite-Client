@@ -1,8 +1,10 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import useSocketBoot from "@/hooks/customHooks/useSocketBoot";
 
 const MainLayout = () => {
+  useSocketBoot()
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
