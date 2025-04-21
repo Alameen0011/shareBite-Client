@@ -73,6 +73,9 @@ const Donation = () => {
           <p>
             <span className="font-semibold">Status:</span> {data.donation.status}
           </p>
+          <p>
+            <span className="font-semibold">OTP:</span> {data.donation.otp}
+          </p>
 
           {data.donation.type !== "non-perishable" ? (
             <p>

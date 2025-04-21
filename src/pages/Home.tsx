@@ -1,7 +1,11 @@
+import { RootState } from "@/app/store";
 import { ArrowRight, Clock, Heart, Users } from "lucide-react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Home = () => {
+  const { isAuthenticated, role } = useSelector((state: RootState) => state.auth);
+
   return (
     <>
     {/* Hero Section */}
@@ -187,9 +191,14 @@ const Home = () => {
         <p className="text-xl text-emerald-900  mb-8 max-w-2xl mx-auto">
           Join our community of food heroes and help us create a world where no food goes to waste and no one goes hungry.
         </p>
-        <Link to="/auth/signup?role=volunteer"  className="px-8 py-4 bg-white text-emerald-900  font-medium rounded-lg shadow-lg hover:bg-emerald-50 transform hover:-translate-y-0.5 transition-all duration-200 inline-flex items-center gap-2">
-          Join as a Volunteer <ArrowRight className="w-5 h-5" />
-        </Link >
+        {
+          !isAuthenticated && (
+            <Link to="/auth/signup?role=volunteer"  className="px-8 py-4 bg-white text-emerald-900  font-medium rounded-lg shadow-lg hover:bg-emerald-50 transform hover:-translate-y-0.5 transition-all duration-200 inline-flex items-center gap-2">
+            Join as a Volunteer <ArrowRight className="w-5 h-5" />
+          </Link >
+          )
+        }
+       
       </div>
     </section>
   </>
