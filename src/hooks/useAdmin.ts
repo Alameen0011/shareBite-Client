@@ -6,6 +6,24 @@ export const useAdmin = () => {
 
     const queryClient = useQueryClient();
 
+
+
+    // Auth
+    const loginMutation = useMutation({
+        mutationFn: async (loginData: {email: string}) => {
+            const response = await axiosInstance.post("/admin/login",loginData)
+            return response.data
+        }
+    })
+
+    const verifyLoginMutation = useMutation({
+        mutationFn: async (token: string) => {
+            const response = await axiosInstance.post(`/admin/verify-login?token=${token}`)
+            return response.data
+        }
+    })
+
+    // User - Management
     const ToggleBlockUser = useMutation({
         mutationFn: async (id : string) => {
             const response = await axiosInstance.patch(`/admin/user/${id}/block`)
@@ -18,7 +36,7 @@ export const useAdmin = () => {
 
 
 
-
+    //Kiosk - management
     const addKiosk = useMutation({
         mutationFn: async (data) => {
             const response = await axiosInstance.post("/admin/kiosks",data)
@@ -54,7 +72,8 @@ export const useAdmin = () => {
 
 
     return {
-    
+        loginMutation,
+        verifyLoginMutation,
         ToggleBlockUser,
         addKiosk,
         editKiosk,
@@ -117,8 +136,8 @@ export const useGetUsersMessagedAdmin = () => {
     return useQuery({
         queryKey:["mesgs"],
         queryFn:async () => {
-            const response = await axiosInstance.get("admin/message/users")
-            return response.data
+            const response = await axiosInstance.get("admin/message")
+            return response.data.users
         }
     })
 }

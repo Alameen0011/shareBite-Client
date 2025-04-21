@@ -5,7 +5,6 @@ import Signup from "@/pages/auth/Signup";
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import { createBrowserRouter } from "react-router-dom";
-// import AuthWrapper from "@/routes/ProtectedRoutes/AuthWrapper";
 import ProtectedRoute from "@/routes/ProtectedRoutes/ProtectedRoute";
 import DonorDashboard from "@/pages/donor/DonorDashboard";
 import AddDonation from "@/pages/donor/AddDonation";
@@ -26,11 +25,14 @@ import Support from "@/pages/Support";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import UserManagement from "@/pages/admin/UserManagement";
 import AdminLayout from "@/layouts/AdminLayout";
-import AdminLogin from "@/pages/admin/AdminLogin";
 import KioskManagement from "@/pages/admin/KioskManagement";
 import AddKiosk from "@/pages/admin/AddKiosk";
 import EditKiosk from "@/pages/admin/EditKiosk";
 import AdminMessages from "@/pages/admin/AdminMessages";
+import AdminLogin from "@/pages/admin/auth/AdminLogin";
+import VerifyAdminLogin from "@/pages/admin/auth/VerifyAdminLogin";
+import AdminAuthWrapper from "./ProtectedRoutes/AdminAuthWrapper";
+
 
 
 export const router = createBrowserRouter([
@@ -47,7 +49,7 @@ export const router = createBrowserRouter([
     },
     {
         path: "/auth",
-        element: <AuthWrapper/>,
+        element: <AuthWrapper roles={["donor","volunteer"]}/>,
         children: [
             { path: "login" , element : <Login/>},
             { path: "signup" , element : <Signup/>},
@@ -101,7 +103,7 @@ export const router = createBrowserRouter([
       {
         path: "/support",
         element: (
-          <ProtectedRoute roles={["volunteer","donor"]} >
+          <ProtectedRoute roles={["volunteer","donor","admin"]} >
             <MainLayout/>
             </ProtectedRoute>
         ),
@@ -113,7 +115,7 @@ export const router = createBrowserRouter([
       {
         path: "/admin",
         element: (
-          <ProtectedRoute roles = {["volunteer"]} >
+          <ProtectedRoute roles= {["admin"]} >
              <AdminLayout/>
           </ProtectedRoute>
         ),
@@ -128,10 +130,11 @@ export const router = createBrowserRouter([
         ]
       },
       {
-        path: "/admin/login",
-        element: <MainLayout />, 
+        path: "/admin/auth",
+        element: <AdminAuthWrapper/>,
         children: [
-          { path: "", element: <AdminLogin /> }, 
+          { path: "", element: <AdminLogin/> }, 
+          { path: "verify-login", element: <VerifyAdminLogin/> }, 
         ]
       },
 

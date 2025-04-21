@@ -15,12 +15,17 @@ import {  useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 import { FC } from "react";
+import axiosInstance from "@/api/axiosInstance";
+import { setAccessToken } from "@/features/auth/authSlice";
+import { useDispatch } from "react-redux";
+import GoogleAuthButton from "./GoogleAuthButton";
+import GoogleAuth from "./GoogleAuth";
 
 
 type FormData = z.infer<typeof registerSchema>;
 
 const Signup: FC = () => {
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()
   // const navigate = useNavigate()
 
   const [searchParams] = useSearchParams();
@@ -28,7 +33,7 @@ const Signup: FC = () => {
 
   const { registerMutation } = useAuth();
   const { mutateAsync: RegisterMutate, isPending } = registerMutation;
-  // const {mutateAsync: googleAuthMutate,isPending:pending} = googleAuthMutation
+  //  const {mutateAsync: googleAuthMutate,isPending:pending} = googleAuthMutation
 
   const {
     register,
@@ -52,25 +57,34 @@ const Signup: FC = () => {
     }
   };
 
-  // const handleGoogleLogin = async (tokenResponse) => {
-  //   try {
-  //     console.log("Google Token Response:", tokenResponse);
-  //     console.log("ID Token:", tokenResponse.id_token); // This is what you need
-  //     console.log("Access Token:", tokenResponse.access_token);
-      
+ 
+   
 
-  //     // console.log(res, "response from google function");
-  //     // if (res?.success) {
-  //     //   toast.success("yes, google reseponse was success ")
-  //     //   const { token, role } = res;
-  //     //   dispatch(setAccessToken({ token, role }));
-  //     //   navigate("/");
-  //     // }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("Google login is not working. please try again later")
-  //   }
-  // };
+  const handleGoogleLogin = async (credentialResponse) => {
+
+    console.log(credentialResponse)
+
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
+    console.log(clientId,"Client IDDD")
+
+
+    try {
+      const response = await axiosInstance.post("/user/google-auth", {
+        credential: credentialResponse.credential,
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID
+      });
+
+      //Handle needed setting accesstoken and role in state
+      console.log("BAckend Response :", response.data);
+      const { token, role } = response.data;
+      console.log("Got token from successfull Response", token, role);
+      dispatch(setAccessToken({ token, role }));
+    } catch (error) {
+      console.error("Error sending credential to backend:", error);
+      toast.error("Error while Google login");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-neutral-100 flex flex-col items-center justify-center p-4">
@@ -134,7 +148,7 @@ const Signup: FC = () => {
               </div>
             </div>
 
-            {/* <GoogleAuthButton onSuccess={handleGoogleLogin} isDisabled={pending} /> */}
+            <GoogleAuth/>
           </CardContent>
           <CardFooter></CardFooter>
         </Card>

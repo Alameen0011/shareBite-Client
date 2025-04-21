@@ -1,8 +1,16 @@
+import { getSocket } from "@/api/socket";
 import { Button } from "@/components/ui/button";
 import { useDonation } from "@/hooks/useDonation";
 import { IsoToReadableFormat } from "@/utils/dateUtils";
 import { PlusCircle } from "lucide-react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+interface IncomeParams {
+  donationId: string,
+  volunteerId: string
+}
 
 const DonorDashboard = () => {
   const { getDonations } = useDonation();
@@ -19,6 +27,40 @@ const DonorDashboard = () => {
     console.log("single donation id ::", id);
     navigate(`/donor/donation/${id}`);
   };
+
+  useEffect(() => {
+        const socket = getSocket();
+        if (!socket) return;
+
+
+    
+    const handleDonationPickedUp = ({donationId, volunteerId}: IncomeParams ) => {
+      console.log("toast message by volunteer on successfull pickup")
+      console.log("donation Id",donationId)
+      console.log("volunteer Id",volunteerId)
+      toast.success(" 🚀 Your donation has been successfully picked up")
+    }
+
+   const handleDonationDelivery = ({donationId, volunteerId}: IncomeParams) => {
+    console.log("toast to donor on successfull deliver")
+    console.log("donation Id",donationId)
+    console.log("volunteer Id",volunteerId)
+    toast.success(" 🚀 Your donation has been successfully delivered")
+   }
+
+
+   socket.on("donationPickedUp",handleDonationPickedUp) //test needed
+
+   socket.on("donationDelivery",handleDonationDelivery)//test needed
+
+
+   return () => {
+ 
+    socket.off("donationPickedUp",handleDonationPickedUp);
+    socket.off("donationDelivery",handleDonationDelivery);
+  };
+
+  },[])
 
 
 

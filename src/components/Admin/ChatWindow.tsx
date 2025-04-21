@@ -1,4 +1,9 @@
+import { getSocket } from '@/api/socket';
+import { RootState } from '@/app/store';
+import { useGetMessages, useMessage } from '@/hooks/useMessage';
+import { getUserIdFromToken } from '@/utils/jwtDecode';
 import { useState, useEffect, useId } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 
 interface ChatWindowProps {
@@ -13,55 +18,56 @@ interface Message {
 export const ChatWindow = ({ userId }: ChatWindowProps) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const { data: chatHistory, isLoading ,isError,refetch} = useGetMessages(userId);
+  const { sendMessage } = useMessage();
+  const { accessToken } = useSelector((state: RootState) => state.auth);
 
-  const {data: chatHistory } = useGetMessages(userId)
-  const  {sendMessage} = useMessage()
-
-  const { mutateAsync } = sendMessage
+  const { mutateAsync } = sendMessage;
 
   useEffect(() => {
-    if(chatHistory){
-      setMessages(chatHistory)
+    if (chatHistory) {
+      setMessages(chatHistory.messages);
     }
+  }, [chatHistory]);
 
-
-
-  },[chatHistory])
+  const adminId = getUserIdFromToken(accessToken);
 
   useEffect(() => {
-    const socket = getSocket();
-    if(!socket) return;
+    const socket = getSocket(); // your singleton getter
+    if (!socket) return;
 
     socket.on("newMessage", (newMsg) => {
       setMessages((prev) => [...prev, newMsg]);
     });
-  
+
     return () => {
       socket.off("newMessage"); // cleanup
     };
+  }, []);
 
-  },[])
-
-  
+    // Refetch when userId changes
+    useEffect(() => {
+      refetch(); // refetch messages when userId changes
+    }, [userId, refetch]);
 
   const handleSendMessage = async () => {
     if (input.trim()) {
-      const data = {id:userId, text: input}
-
-      console.log(data,"data sending to server")
-      const res = await mutateAsync(data)
-      if(res.success){
-        toast.success("message sended successfully")
+      const data = { id: userId, text: input };
+      console.log(data, 'data sending to server');
+      const res = await mutateAsync(data);
+      if (res.success) {
+        toast.success('Message sent successfully');
       }
 
-
-
       // Optionally add to local state (optimistic UI)
-      setMessages((prevMessages) => [...prevMessages, { senderId:userId, text: input } ]);
+      setMessages((prevMessages) => [...prevMessages, res.newMessage]);
       setInput('');
     }
   };
+
+  if(isLoading) return <p>Loading....</p>
+  if(isError) return <p>Error....</p>
 
   return (
     <div className="flex flex-col h-full">
@@ -79,11 +85,13 @@ export const ChatWindow = ({ userId }: ChatWindowProps) => {
           messages.map((msg, index) => (
             <div
               key={index}
-              className={`flex ${msg.senderId === 'admin' ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${msg.senderId === adminId ? 'justify-end' : 'justify-start'}`}
             >
               <div
                 className={`max-w-xs p-3 rounded-lg ${
-                  msg.senderId === 'admin' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+                  msg.senderId === adminId
+                    ? 'bg-blue-500 text-white ml-auto' // Admin messages on the right
+                    : 'bg-gray-200 text-black mr-auto' // User messages on the left
                 }`}
               >
                 {msg.text}

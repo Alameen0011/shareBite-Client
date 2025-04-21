@@ -10,10 +10,7 @@ import { toast } from "sonner";
 // };
 
 
-interface IncomeParams {
-  donationId: string,
-  volunteerId: string
-}
+
 
 
 export const useVolunteerSocket = (lat: number | null, lng: number | null): Donation[] => {
@@ -66,19 +63,6 @@ export const useVolunteerSocket = (lat: number | null, lng: number | null): Dona
       toast.success(`🍱 New donation available at ${newDonation.pickupLocation.address || "a nearby location"}!`);
     }
 
-    const handleDonationPickedUp = ({donationId, volunteerId}: IncomeParams ) => {
-      console.log("toast message by volunteer on successfull pickup")
-      console.log("donation Id",donationId)
-      console.log("volunteer Id",volunteerId)
-      toast.success(" 🚀 Your donation has been successfully picked up")
-    }
-
-   const handleDonationDelivery = ({donationId, volunteerId}: IncomeParams) => {
-    console.log("toast to donor on successfull deliver")
-    console.log("donation Id",donationId)
-    console.log("volunteer Id",volunteerId)
-    toast.success(" 🚀 Your donation has been successfully delivered")
-   }
   
 
  
@@ -90,16 +74,12 @@ export const useVolunteerSocket = (lat: number | null, lng: number | null): Dona
 
     socket.on("donation:new", handleNewDonation);  //working fine without handleclaimed
 
-    socket.on("donationPickedUp",handleDonationPickedUp) //test needed
-
-    socket.on("donationDelivery",handleDonationDelivery)//test needed
 
     return () => {
       socket.off("donations:nearby", handleNearby);
       socket.off("donationClaimed", handleClaimed);
       socket.off("donation:new",handleNewDonation);
-      socket.off("donationPickedUp",handleDonationPickedUp);
-      socket.off("donationDelivery",handleDonationDelivery);
+
     };
   }, [lat, lng, accessToken]);
 
