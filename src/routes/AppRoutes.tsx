@@ -26,7 +26,6 @@ import AdminLogin from "@/pages/admin/AdminLogin";
 import KioskManagement from "@/pages/admin/KioskManagement";
 import AddKiosk from "@/pages/admin/AddKiosk";
 import EditKiosk from "@/pages/admin/EditKiosk";
-import AdminSupport from "@/pages/admin/AdminSupport";
 import AdminMessages from "@/pages/admin/AdminMessages";
 
 
