@@ -86,19 +86,20 @@ export const useVolunteerSocket = (lat: number | null, lng: number | null): Dona
     // Listen for nearby donations
     socket.on("donations:nearby", handleNearby); //working fine
 
-    socket.on("donationClaimed", handleClaimed); 
+    socket.on("donationClaimed", handleClaimed); // this is also working fine, but with merging useing usememo prevent this, we can use invalidation of that query to show realtime claiming - test needed
 
     socket.on("donation:new", handleNewDonation);  //working fine without handleclaimed
 
-    socket.on("donationPickedUp",handleDonationPickedUp)
+    socket.on("donationPickedUp",handleDonationPickedUp) //test needed
 
-    socket.on("donationDelivery",handleDonationDelivery)
+    socket.on("donationDelivery",handleDonationDelivery)//test needed
 
     return () => {
       socket.off("donations:nearby", handleNearby);
       socket.off("donationClaimed", handleClaimed);
       socket.off("donation:new",handleNewDonation);
       socket.off("donationPickedUp",handleDonationPickedUp);
+      socket.off("donationDelivery",handleDonationDelivery);
     };
   }, [lat, lng, accessToken]);
 
