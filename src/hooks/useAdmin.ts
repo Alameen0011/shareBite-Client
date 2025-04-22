@@ -71,13 +71,65 @@ export const useAdmin = () => {
 
 
 
+    //admin - dashboard - analytics
+
+    const getDonationTrend = useQuery({
+        queryKey:["donationTrend"],
+        queryFn: async () => {
+            const response = await axiosInstance.get("/admin/donationTrend")
+            return response.data.trend
+
+        }
+    })
+    const getTotalDonations = useQuery({
+        queryKey:["totalDonations"],
+        queryFn: async () => {
+            const response = await axiosInstance.get("/admin/totalDonations")
+            return response.data.total
+
+        }
+    })
+    const getTotalVolunteers = useQuery({
+        queryKey:["totalVolunteers"],
+        queryFn: async () => {
+            const response = await axiosInstance.get("/admin/totalVolunteers")
+            return response.data.total
+
+        }
+    })
+    const getTotalDonors = useQuery({
+        queryKey:["totalDonors"],
+        queryFn: async () => {
+            const response = await axiosInstance.get("/admin/totalDonors")
+            return response.data.total
+
+        }
+    })
+    const getTotalKiosks = useQuery({
+        queryKey:["totalKiosks"],
+        queryFn: async () => {
+            const response = await axiosInstance.get("/admin/totalKiosks")
+            return response.data.total
+
+        }
+    })
+
+    
+
+
+
     return {
         loginMutation,
         verifyLoginMutation,
         ToggleBlockUser,
         addKiosk,
         editKiosk,
-        deleteKiosk
+        deleteKiosk,
+        getDonationTrend,
+        getTotalDonations,
+        getTotalDonors,
+        getTotalVolunteers,
+        getTotalKiosks
 
     }
 }

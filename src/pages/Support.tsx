@@ -7,6 +7,8 @@ import { PlusCircle, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import { VideoIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Message {
   senderId: string;
@@ -29,21 +31,25 @@ const SupportChat = () => {
 
   const { mutateAsync } = sendMessage;
 
-  const { accessToken } = useSelector( (state: RootState) => state.auth); 
+  const navigate = useNavigate();
+
+  const { accessToken } = useSelector((state: RootState) => state.auth);
 
   const userId = getUserIdFromToken(accessToken);
 
-
-  
+  const handleVideoCall = () => {
+    const roomID = `support-${userId}`; // can be anything unique
+    navigate(`/video-room/${roomID}`);
+  };
 
   useEffect(() => {
     //Fetch chat history
     if (chatHistory) {
-      console.log(userId,"user id to seperate chats +++++")
+      console.log(userId, "user id to seperate chats +++++");
       console.log(chatHistory, "chat history will []");
       setMessages(chatHistory.messages);
     }
-  }, [chatHistory,userId]);
+  }, [chatHistory, userId]);
 
   useEffect(() => {
     const socket = getSocket(); // your singleton getter
@@ -65,13 +71,13 @@ const SupportChat = () => {
       console.log(data, "data sending to server");
       const res = await mutateAsync(data);
 
-      console.log(res,"new message")
+      console.log(res, "new message");
       if (res.success) {
         toast.success("message sended successfully");
       }
 
       // Optionally add to local state (optimistic UI)
-      setMessages((prevMessages) => [...prevMessages,res.newMessage] );
+      setMessages((prevMessages) => [...prevMessages, res.newMessage]);
       setInput("");
     }
   };
@@ -94,9 +100,17 @@ const SupportChat = () => {
 
       {/* Right Chat Panel */}
       <div className="w-full md:w-2/3 p-6 flex flex-col h-full">
-        <h3 className="text-lg font-semibold text-purple-700 mb-4">
-          Live Chat
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-purple-700">Live Chat</h3>
+
+          <button
+            onClick={handleVideoCall}
+            className="text-purple-700 hover:text-purple-900 transition"
+            title="Start Video Call"
+          >
+            <VideoIcon className="w-6 h-6" />
+          </button>
+        </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto space-y-3 pr-1">

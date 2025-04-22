@@ -4,7 +4,7 @@ import Login from "@/pages/auth/Login";
 import Signup from "@/pages/auth/Signup";
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import ProtectedRoute from "@/routes/ProtectedRoutes/ProtectedRoute";
 import DonorDashboard from "@/pages/donor/DonorDashboard";
 import AddDonation from "@/pages/donor/AddDonation";
@@ -32,6 +32,7 @@ import AdminMessages from "@/pages/admin/AdminMessages";
 import AdminLogin from "@/pages/admin/auth/AdminLogin";
 import VerifyAdminLogin from "@/pages/admin/auth/VerifyAdminLogin";
 import AdminAuthWrapper from "./ProtectedRoutes/AdminAuthWrapper";
+import VedioRoom from "@/components/VedioCall/VedioRoom";
 
 
 
@@ -110,6 +111,20 @@ export const router = createBrowserRouter([
         children: [
           { path: "", element: <Support /> },
         ]
+      },
+      {
+        path: "/video-room/:roomID",
+        // element: (
+        //   // <ProtectedRoute roles={["volunteer", "donor", "admin"]}>
+        //   //   <Outlet />
+        //   // </ProtectedRoute>
+        // ),
+        children: [
+          {
+            path: "",
+            element: <VedioRoom />,
+          },
+        ],
       },
 
       {
