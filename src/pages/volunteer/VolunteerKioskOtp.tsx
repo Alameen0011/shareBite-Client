@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const VolunteerKioskOtp = () => {
-  const { id } = useParams();
+  const { id } = useParams<string>();
 
   const navigate = useNavigate();
 
@@ -49,6 +49,8 @@ const VolunteerKioskOtp = () => {
 
   const handleVerify = async () => {
     const derivedOtp = otp.join("");
+
+
 
     try {
       const res = await mutateAsync({ id, otp: derivedOtp });

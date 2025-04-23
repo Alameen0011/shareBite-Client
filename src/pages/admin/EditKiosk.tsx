@@ -1,3 +1,5 @@
+import AdminError from '@/components/Admin/AdminError';
+import Loading from '@/components/Loading';
 import LeafletMap from '@/components/Map/LeafletMap';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,14 +19,12 @@ type editKiosk = z.infer<typeof editKioskSchema>;
 
 const EditKiosk = () => {
     const { id } = useParams<{ id: string }>();
+    const [isMapOpen, setIsMapOpen] = useState(false);
 
-     const [isMapOpen, setIsMapOpen] = useState(false);
-
-    const { data: kioskData, isLoading: isKioskLoading, isError: isKioskError,} = useGetSingleKiosk(id);
+    const { data: kioskData, isLoading: isKioskLoading, isError: isKioskError,} = useGetSingleKiosk(id!);
   
     const { editKiosk } = useAdmin();
-  
-    const { mutateAsync, isPending: isEditPending, isError: isEditError,} = editKiosk;
+    const { mutateAsync} = editKiosk;
 
     const navigate = useNavigate()
 
@@ -33,7 +33,6 @@ const EditKiosk = () => {
       const {
         register,
         handleSubmit,
-        watch,
         control,
         reset,
         setValue,
@@ -46,18 +45,19 @@ const EditKiosk = () => {
       useEffect(() => {
           if (!kioskData || !kioskData.kiosk) return;
 
- 
-          console.log(kioskData,"kiosk data inside useEffect")
-        
-        
           reset(kioskData.kiosk);
-       
+
         }, [kioskData, reset]);
 
 
         const handleUpdateKiosk = async (data:editKiosk) => {
-            console.log(data,"updation data")
-           const neededData = {id,data}
+            if (!id) {
+              console.error("Kiosk ID not found in URL");
+              return;
+            }
+          
+            const neededData: { id: string; data: editKiosk } = { id, data};
+
             try {
                 const res = await mutateAsync(neededData)
                 if(res.success){
@@ -72,11 +72,8 @@ const EditKiosk = () => {
 
 
 
-        const form = watch();
-        console.log(form);
-
-        if(isKioskLoading) return <p>Loading....</p>
-        if(isKioskError) return <p>Errorr.....</p>
+        if(isKioskLoading) return <Loading/>
+        if(isKioskError) return <AdminError message='error fetching kiosk details' />
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">

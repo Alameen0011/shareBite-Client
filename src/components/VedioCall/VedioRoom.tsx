@@ -1,31 +1,30 @@
-import { useEffect, useId } from 'react'
+import { useEffect } from 'react'
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useParams } from 'react-router-dom';
 import axiosInstance from '@/api/axiosInstance';
-import { getSocket } from '@/api/socket';
 import { getUserIdFromToken } from '@/utils/jwtDecode';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
-import { toast } from 'sonner';
 
 const VedioRoom = () => {
     //room id - something unique
     const { roomID } = useParams()
     //support-72394294240
 
-    console.log(roomID,"room idd")
-
     const { accessToken } = useSelector((state: RootState) => state.auth);
 
-    const clientId = getUserIdFromToken(accessToken)
+    const clientId = getUserIdFromToken(accessToken!)
 
     //random userId - unique
     const userID = "guest-" + clientId;
 
     //app id
     const appID = import.meta.env.VITE_APPID_ZEGOCLOUD;
+
+    //A name for config
     const userName ="GUEST"
 
+    //Zego cloud config
     useEffect(() => {
 
         const init = async () => {
@@ -38,9 +37,6 @@ const VedioRoom = () => {
         const backendToken = response.data.token 
 
         const kitToken =  ZegoUIKitPrebuilt.generateKitTokenForProduction(Number(appID),backendToken,roomID!,userID,userName);
-
-        console.log(kitToken,"KITTT TOKEENNNNN");
-
 
             //create instance object from token from server
             const zp = ZegoUIKitPrebuilt.create(kitToken);
@@ -64,46 +60,10 @@ const VedioRoom = () => {
             console.log(error,"error in vedio zego")
             
           }
-         
-
-
-
         }
 
         init()
     },[roomID,userID,appID])
-
-
-    useEffect(() => {
-      const socket = getSocket()
-      console.log("socket in DONOR/Volunteer:", socket); 
-      console.log("called socket useEffect called")
-      if (!socket) return;
-
-
-      const handleDecline = ({ message}) => {
-        console.log(roomID,"declined id from other client")
-        toast.error(`Admin declined, ${message}.`);
-        // optionally: navigate away, close call UI, or show retry
-      };
-    
-      socket.on("call_declined", handleDecline);
-
-
-
-      socket?.emit("call_Request",{
-        from: clientId,
-        roomID,
-        userName
-      })
-
-      return () => {
-        socket.off("call_declined",handleDecline)
-      }
-
-    },[roomID,clientId,userID])
-
-
 
 
 

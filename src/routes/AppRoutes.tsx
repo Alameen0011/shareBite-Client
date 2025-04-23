@@ -33,6 +33,7 @@ import AdminLogin from "@/pages/admin/auth/AdminLogin";
 import VerifyAdminLogin from "@/pages/admin/auth/VerifyAdminLogin";
 import AdminAuthWrapper from "./ProtectedRoutes/AdminAuthWrapper";
 import VedioRoom from "@/components/VedioCall/VedioRoom";
+import Blocked from "@/pages/Blocked";
 
 
 
@@ -114,11 +115,6 @@ export const router = createBrowserRouter([
       },
       {
         path: "/video-room/:roomID",
-        // element: (
-        //   // <ProtectedRoute roles={["volunteer", "donor", "admin"]}>
-        //   //   <Outlet />
-        //   // </ProtectedRoute>
-        // ),
         children: [
           {
             path: "",
@@ -135,7 +131,7 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          { path: "dashboard",element: <AdminDashboard /> },
+          { path: "",element: <AdminDashboard /> },
           { path: "user/management",element: <UserManagement /> },
           { path: "kiosk/management",element: <KioskManagement /> },
           { path: "addkiosk",element: <AddKiosk /> },
@@ -156,4 +152,5 @@ export const router = createBrowserRouter([
 
     { path: "*" , element: <NotFound/> },
     { path: "/unauthorized", element: <Unauthorized /> },
+    { path: "/blocked",element:<Blocked /> }
 ])

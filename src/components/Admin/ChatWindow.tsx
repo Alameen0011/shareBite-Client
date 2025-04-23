@@ -2,9 +2,11 @@ import { getSocket } from '@/api/socket';
 import { RootState } from '@/app/store';
 import { useGetMessages, useMessage } from '@/hooks/useMessage';
 import { getUserIdFromToken } from '@/utils/jwtDecode';
-import { useState, useEffect, useId } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
+import Loading from '../Loading';
+import AdminError from './AdminError';
 
 interface ChatWindowProps {
   userId: string;
@@ -31,10 +33,10 @@ export const ChatWindow = ({ userId }: ChatWindowProps) => {
     }
   }, [chatHistory]);
 
-  const adminId = getUserIdFromToken(accessToken);
+  const adminId = getUserIdFromToken(accessToken!);
 
   useEffect(() => {
-    const socket = getSocket(); // your singleton getter
+    const socket = getSocket(); 
     if (!socket) return;
 
     socket.on("newMessage", (newMsg) => {
@@ -42,19 +44,18 @@ export const ChatWindow = ({ userId }: ChatWindowProps) => {
     });
 
     return () => {
-      socket.off("newMessage"); // cleanup
+      socket.off("newMessage"); 
     };
   }, []);
 
     // Refetch when userId changes
     useEffect(() => {
-      refetch(); // refetch messages when userId changes
+      refetch(); 
     }, [userId, refetch]);
 
   const handleSendMessage = async () => {
     if (input.trim()) {
-      const data = { id: userId, text: input };
-      console.log(data, 'data sending to server');
+      const data: {id:string,text:string} = { id: userId, text: input };
       const res = await mutateAsync(data);
       if (res.success) {
         toast.success('Message sent successfully');
@@ -66,15 +67,15 @@ export const ChatWindow = ({ userId }: ChatWindowProps) => {
     }
   };
 
-  if(isLoading) return <p>Loading....</p>
-  if(isError) return <p>Error....</p>
+  if(isLoading) return <Loading/>
+  if(isError) return <AdminError message='Error fetching messages' />
 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between py-2 border-b">
-        <h3 className="text-xl font-semibold">Chat with User {userId}</h3>
-        <button className="text-sm text-blue-500">End Chat</button>
+        <h3 className="text-xl font-semibold">Chat with User </h3>
+        {/* <button className="text-sm text-blue-500">End Chat</button> */}
       </div>
 
       {/* Chat messages */}

@@ -63,7 +63,7 @@ const VolunteerOtp = () => {
   //handle verification
   const handleVerify = async () => {
     const derivedOtp = otp.join("");
-    const dataToSend = { id: donationId, derivedOtp };
+    const dataToSend:{id:string,derivedOtp:string} = { id: donationId, derivedOtp };
 
     try {
       const res = await mutateAsync(dataToSend);

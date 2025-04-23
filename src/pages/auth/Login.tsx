@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { FC } from "react"
 import { z } from "zod"
 import GoogleAuth from "./GoogleAuth";
+import { useNavigate } from "react-router-dom";
 
 type FormData = z.infer<typeof loginSchema>
 
@@ -19,6 +20,8 @@ const Login: FC = () => {
   const { mutateAsync ,isPending } = loginMutation;
 
   const { register,handleSubmit,formState: { errors },} = useForm<FormData>({ resolver: zodResolver(loginSchema) });
+
+  const navigate = useNavigate()
 
   const handleUserLogin = async (data: FormData) => {
     console.log(data, "data after proper validation");
@@ -31,9 +34,17 @@ const Login: FC = () => {
       }else{
         toast.error(res?.message || "Login failed. please try again later")
       }
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong. Please try again.");
+    } catch (err) {
+      console.log(err,"error")
+      if (err.response?.data?.error === "blocked") {
+        toast.error("Your account has been blocked.")
+        // Optional: redirect to a blocked screen
+        navigate("/blocked")
+        return
+      }
+    
+      // Other errors
+      toast.error("Login failed")
     }
   };
 

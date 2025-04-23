@@ -6,7 +6,7 @@ interface DonationTrendProps {
 
 const DonationTrendChart: React.FC<DonationTrendProps> = ({ data }) => {
   return (
-    <div className="w-full h-[300px] bg-white p-4 rounded-xl shadow">
+    <div className="w-full h-[400px] bg-white p-4 rounded-xl shadow">
       <h2 className="text-lg font-semibold mb-4">Donation Trend</h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>

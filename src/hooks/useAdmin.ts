@@ -1,5 +1,26 @@
 import axiosInstance from "@/api/axiosInstance"
+import { editKioskSchema, kioskSchema } from "@/validations/kiosk/addKiosk";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { z } from "zod";
+
+
+type GetAllUsersParams = {
+    page: number;
+    limit: number;
+    search?: string;
+    role?: string;
+  };
+
+
+type Kiosk = z.infer<typeof kioskSchema>;
+type EditKiosk = z.infer<typeof editKioskSchema>;
+
+type GetKiosksParams = {
+    page: number;
+    limit: number;
+    search?: string; 
+  };
+  
 
 
 export const useAdmin = () => {
@@ -23,6 +44,13 @@ export const useAdmin = () => {
         }
     })
 
+    // const adminLogout = useMutation({
+    //     mutationFn: async () => {
+    //         const response = await axiosInstance.post(`/admin/logout`)
+    //         return response.data
+    //     }
+    // })
+
     // User - Management
     const ToggleBlockUser = useMutation({
         mutationFn: async (id : string) => {
@@ -38,7 +66,7 @@ export const useAdmin = () => {
 
     //Kiosk - management
     const addKiosk = useMutation({
-        mutationFn: async (data) => {
+        mutationFn: async (data:Kiosk) => {
             const response = await axiosInstance.post("/admin/kiosks",data)
             return response.data
         },
@@ -49,7 +77,7 @@ export const useAdmin = () => {
 
 
     const editKiosk = useMutation({
-        mutationFn: async ({ id, data }) => {
+        mutationFn: async ({ id, data }: {id:string,data:EditKiosk}) => {
             const response = await axiosInstance.patch(`/admin/kiosks/${id}`,data)
             return response.data
         },
@@ -72,7 +100,6 @@ export const useAdmin = () => {
 
 
     //admin - dashboard - analytics
-
     const getDonationTrend = useQuery({
         queryKey:["donationTrend"],
         queryFn: async () => {
@@ -114,6 +141,23 @@ export const useAdmin = () => {
         }
     })
 
+
+    const getTopDonors = useQuery({
+        queryKey:["topDonors"],
+        queryFn: async () => {
+            const response = await axiosInstance.get("/admin/top-donors")
+            return response.data.topDonors
+        }
+    })
+
+    const getTopVolunteers = useQuery({
+        queryKey:["topVolunteers"],
+        queryFn: async () => {
+            const response = await axiosInstance.get("/admin/top-volunteers")
+            return response.data.topVolunteers
+        }
+    })
+
     
 
 
@@ -121,6 +165,7 @@ export const useAdmin = () => {
     return {
         loginMutation,
         verifyLoginMutation,
+        // adminLogout,
         ToggleBlockUser,
         addKiosk,
         editKiosk,
@@ -129,12 +174,14 @@ export const useAdmin = () => {
         getTotalDonations,
         getTotalDonors,
         getTotalVolunteers,
-        getTotalKiosks
+        getTotalKiosks,
+        getTopDonors,
+        getTopVolunteers
 
     }
 }
 
-export const useGetAllUsers = ({ page, limit, search, role }) => {
+export const useGetAllUsers = ({ page, limit, search, role }:GetAllUsersParams) => {
     return useQuery({
       queryKey: ["users", { page, limit, search, role }],
       queryFn: async () => {
@@ -156,14 +203,15 @@ export const useGetAllUsers = ({ page, limit, search, role }) => {
 
 
 
-export const  useGetKiosks = ({ page,limit }) => {
+export const  useGetKiosks = ({ page,limit,search }:GetKiosksParams) => {
     return useQuery({
-        queryKey: ["kiosks", { page, limit }],
+        queryKey: ["kiosks", { page, limit,search }],
         queryFn:async () => {
             const response = await axiosInstance.get("/admin/kiosks",{
                 params: {
                     page,
                     limit,
+                    search
                 }
             })
             return response.data

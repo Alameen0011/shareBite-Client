@@ -33,6 +33,7 @@ const authSlice = createSlice({
 
       // Clear localStorage
       localStorage.removeItem("auth");
+      localStorage.clear()
     },
   },
 });

@@ -1,4 +1,5 @@
 import { getSocket } from "@/api/socket"
+import AdminError from "@/components/Admin/AdminError"
 import DonationTrendChart from "@/components/Admin/DonationTrendChart"
 import { useAdmin } from "@/hooks/useAdmin"
 import { useEffect } from "react"
@@ -6,62 +7,52 @@ import { toast } from "sonner"
 
 const AdminDashboard = () => {
 
-  const {getDonationTrend,getTotalDonations,getTotalDonors,getTotalKiosks,getTotalVolunteers} = useAdmin()
-  const {data: trend, isLoading:loadingTrend} = getDonationTrend
+  const {getDonationTrend,getTotalDonations,getTotalDonors,getTotalKiosks,getTotalVolunteers,getTopDonors,getTopVolunteers} = useAdmin()
+  const {data: trend, isLoading:loadingTrend , isError} = getDonationTrend
   const {data:totalDonations} = getTotalDonations
   const {data:totalVolunteers} = getTotalVolunteers
   const {data:totalDonors} = getTotalDonors
   const {data:totalKiosks} = getTotalKiosks
+  const {data:topDonors} = getTopDonors
+  const {data:topVolunteers} = getTopVolunteers
 
 
 
   useEffect(() => {
-    const socket = getSocket()
-    console.log("socket in admin:", socket); 
-    if(!socket) return
-    console.log("called useEFFECT in ADminDashoard")
+    const socket = getSocket();
+    if (!socket) return;
+  
+    const handleVideoCallRequested = ({ from, roomID, role }:{from:string,roomID:string,role:string}) => {
 
-
-
-    const handleVideoCallRequested = ({from,roomID,userName }) => {
-
-      console.log("Vedio call requested")
-
-      const callUrl = `${import.meta.env.VITE_CLIENT_URL}/video-room/${roomID}`
-
-      //accept or reject
-      toast(`Incoming call from ${userName}`,{
+      const callUrl = `${import.meta.env.VITE_CLIENT_URL}/video-room/${roomID}`;
+  
+      toast(`Incoming call from ${role}`, {
         description: 'click accept to join video call',
-        action:{
-          label:'Accept',
-          onClick: () => {
-            window.open(callUrl,'_blank')
-          },
+        action: {
+          label: 'Accept',
+          onClick: () => window.open(callUrl, '_blank'),
         },
-        cancel:{
-          label:'reject',
-          onClick: () => {
-            socket.emit("call_declined",{ from,roomID })
-          }
+        cancel: {
+          label: 'Reject',
+          onClick: () => socket.emit("call_declined", { from, roomID }),
         },
-        duration:100000
-      })
+        duration: 10000,
+        
+      });
+    };
+  
 
-    }
-
-    socket.on("call_Request",handleVideoCallRequested)
-
-
-
+    socket.on("call_Request", handleVideoCallRequested);
+    console.log("Call_Request listeners count:", socket.listeners("call_Request"));
+  
     return () => {
-      socket.off("call_Request",handleVideoCallRequested)
-    }
+      socket.off("call_Request", handleVideoCallRequested);
+    };
+  }, []);
+  
 
 
-  },[])
-
-
-
+  if(isError) return <AdminError />
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,6 +74,11 @@ const AdminDashboard = () => {
         <DonationTrendChart data={trend || []} />
       )}
     </div>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+  <TopListCard title="Top 5 Donors" data={topDonors} field="donationsCount" />
+  <TopListCard title="Top 5 Volunteers" data={topVolunteers} field="pickupsCount" />
+</div>
   </div>
   )
 }
@@ -96,3 +92,29 @@ const StatCard = ({ label, value }: { label: string; value: number | undefined }
     <p className="text-2xl font-semibold text-gray-800">{value ?? '—'}</p>
   </div>
 );
+
+const TopListCard = ({
+  title,
+  data,
+  field,
+}: {
+  title: string;
+  data: { name: string; [key: string]: any }[] | undefined;
+  field: string;
+}) => (
+  <div className="bg-white rounded-xl shadow p-5">
+    <h3 className="text-lg font-semibold mb-4">{title}</h3>
+    {data?.length ? (
+      <ul className="space-y-2">
+        {data.map((item, index) => (
+          <li key={index} className="flex justify-between text-gray-700">
+            <span>{item.name}</span>
+            <span className="font-medium">{item[field]}</span>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-gray-500">No data available</p>
+    )}
+  </div>
+)

@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { VideoIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 interface Message {
   senderId: string;
@@ -24,35 +23,55 @@ const SupportChat = () => {
   const [input, setInput] = useState("");
 
   const AdminId = "67ff4e383822a164d3d0e300";
-
-  const { data: chatHistory, isLoading, isError } = useGetMessages(AdminId);
-
+  const { data: chatHistory } = useGetMessages(AdminId);
   const { sendMessage } = useMessage();
-
   const { mutateAsync } = sendMessage;
 
-  const navigate = useNavigate();
-
-  const { accessToken } = useSelector((state: RootState) => state.auth);
-
-  const userId = getUserIdFromToken(accessToken);
+  const { accessToken,role } = useSelector((state: RootState) => state.auth);
+  const userId = getUserIdFromToken(accessToken!);
+  const RoomID = `support-${userId}`;
+ 
 
   const handleVideoCall = () => {
-    const roomID = `support-${userId}`; // can be anything unique
-    navigate(`/video-room/${roomID}`);
+    const videoURL = `${window.location.origin}/video-room/${RoomID}`;
+    window.open(videoURL, "_blank");
+
+  
+    const socket = getSocket(); 
+    console.log(socket,"Sockeet on vedio call instatioann")
+    if (socket && socket.connected) {
+      socket.emit("call_Request", {
+        from: userId,
+        RoomID,
+        role,
+      });
+    }
   };
 
   useEffect(() => {
-    //Fetch chat history
+    // Fetch chat history
     if (chatHistory) {
-      console.log(userId, "user id to seperate chats +++++");
-      console.log(chatHistory, "chat history will []");
       setMessages(chatHistory.messages);
     }
   }, [chatHistory, userId]);
 
   useEffect(() => {
-    const socket = getSocket(); // your singleton getter
+    const socket = getSocket(); // Singleton socket
+    if (!socket) return;
+
+    const handleDecline = ({ message }: { message: string }) => {
+      toast.error(`Admin declined, ${message}.`);
+    };
+
+    socket.on("call_declined", handleDecline);
+
+    return () => {
+      socket.off("call_declined", handleDecline); 
+    };
+  }, []);
+
+  useEffect(() => {
+    const socket = getSocket(); // Singleton socket
     if (!socket) return;
 
     socket.on("newMessage", (newMsg) => {
@@ -60,25 +79,21 @@ const SupportChat = () => {
     });
 
     return () => {
-      socket.off("newMessage"); // cleanup
+      socket.off("newMessage"); // cleanup on unmount
     };
   }, []);
 
   const handleMessage = async () => {
     if (input.trim()) {
       const data = { id: AdminId, text: input };
-
-      console.log(data, "data sending to server");
       const res = await mutateAsync(data);
 
-      console.log(res, "new message");
       if (res.success) {
-        toast.success("message sended successfully");
+        toast.success("Message sent successfully");
+        // Optionally add to local state (optimistic UI)
+        setMessages((prevMessages) => [...prevMessages, res.newMessage]);
+        setInput("");
       }
-
-      // Optionally add to local state (optimistic UI)
-      setMessages((prevMessages) => [...prevMessages, res.newMessage]);
-      setInput("");
     }
   };
 

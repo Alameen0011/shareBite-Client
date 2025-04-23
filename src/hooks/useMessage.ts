@@ -1,6 +1,11 @@
 import axiosInstance from "@/api/axiosInstance"
 import { useMutation, useQuery } from "@tanstack/react-query"
 
+type MessageParams = {
+    id:string,
+    text:string
+}
+
 export const useGetMessages = (id: string) => {
     return useQuery({
         queryKey: ["getMessages"],
@@ -17,7 +22,7 @@ export const useGetMessages = (id: string) => {
 export const useMessage = () => {
 
     const sendMessage = useMutation({
-        mutationFn: async ({id,text}) => {
+        mutationFn: async ({id,text}:MessageParams) => {
             const response = await axiosInstance.post(`admin/message/send/${id}`, { text })
             return response.data
         }

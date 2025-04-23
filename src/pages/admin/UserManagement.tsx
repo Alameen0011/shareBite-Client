@@ -21,7 +21,10 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/Pagination";
 import { toast } from "sonner";
+import Loading from "@/components/Loading";
+import AdminError from "@/components/Admin/AdminError";
 
+//Constant
 const LIMIT = 10;
 
 const UserManagement = () => {
@@ -33,52 +36,52 @@ const UserManagement = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
-    }, 500); // debounce delay
+    }, 500);
 
     return () => {
-      clearTimeout(handler); // cleanup on each new keystroke
+      clearTimeout(handler); 
     };
   }, [search]);
 
-  const { data, isError, isLoading } = useGetAllUsers({
-    page,
-    limit: LIMIT,
-    search: debouncedSearch,
-    role,
-  });
+  //data fetching
+  const { data, isError, isLoading, refetch } = useGetAllUsers({ page, limit: LIMIT, search: debouncedSearch, role});
 
+  //Mutation hook
   const {ToggleBlockUser} = useAdmin()
-  const { mutateAsync,isPending } = ToggleBlockUser 
+  const { mutateAsync } = ToggleBlockUser 
 
+  //Extracted Data
   const users = data?.Users || [];
-  console.log(users, "users");
   const totalPages = data?.totalPages || 1;
-  console.log(totalPages, "total Pages");
 
+  //Handles block/unblock 
   const handleToggleBlock = async (id: string) => {
     try {
      const res =  await mutateAsync(id);
-     console.log(res,"response from api")
      if(res.success){
-      toast.success(`${res.user.name}  successfully`)
+      toast.success(`${res.user.isBlocked ? `${res.user.name} has been blocked` : `${res.user.name} has been unblocked`} `)
      }
     } catch (error) {
       console.error("Error toggling user block status", error);
     }
   };
 
+  //Handles Search
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
     setPage(1);
   };
 
+  //Handles role change
   const handleRoleChange = (val: string) => {
     setRole(val);
     setPage(1);
   };
 
-  if (isLoading) return <p>Loading ...</p>;
-  if (isError) return <p>Error....</p>;
+
+  //UI rendering
+  if (isLoading) return <Loading />;
+  if (isError) return <AdminError message="Failed to load users." retry={refetch} />;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -19,7 +19,7 @@ export const useVolunteer = () => {
     })
 
     const verifyAndPickup = useMutation({
-        mutationFn: async({id,derivedOtp}) => {
+        mutationFn: async({id,derivedOtp}:{id:string,derivedOtp:string}) => {
             console.log(id,derivedOtp)
             const response = await axiosInstance.patch(`/volunteer/donations/${id}/verifyPickup`,{otp:derivedOtp})
             return response.data
@@ -28,7 +28,7 @@ export const useVolunteer = () => {
     })
 
     const verifyAndDeliver = useMutation({
-        mutationFn: async({id , otp}) => {
+        mutationFn: async({id , otp}: {id:string,otp:string}) => {
             console.log(id,otp,"id and otp in verify and deliver")
             const response = await axiosInstance.patch(`/volunteer/donations/${id}/delivered`,{otp})
             return response.data
@@ -66,7 +66,7 @@ export const useGetAvailableDonations = ({ lat, lng, radius }: AvailableDonation
     });
   };
 
-  export const useGetNearestKiosk = ({ lat, lng, id }) => {
+  export const useGetNearestKiosk = ({ lat, lng, id }:{lat:number,lng:number,id:string}) => {
     console.log("lat, lng, id inside query:", lat, lng, id); // Log params
   
     return useQuery({

@@ -1,20 +1,18 @@
+import AdminError from '@/components/Admin/AdminError';
 import { ChatWindow } from '@/components/Admin/ChatWindow';
+import Loading from '@/components/Loading';
 import { useGetUsersMessagedAdmin } from '@/hooks/useAdmin';
-// import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react'
 
-const AdminMessages = () => {
-
+const AdminMessages: React.FC = () => {
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
-    // Simulate fetching user list (You could replace with an API call using React Query)
-    const { data: users, isLoading, isError } = useGetUsersMessagedAdmin()
+
+    const { data: users, isLoading, isError, refetch } = useGetUsersMessagedAdmin()
 
 
-
-
-    if(isLoading) return <p>loading....</p>
-    if(isError) return <p>Error....</p>
+    if (isLoading) return <Loading />;
+    if (isError) return <AdminError message="Error feching message" retry={refetch} />;
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -25,7 +23,7 @@ const AdminMessages = () => {
           <p>Loading users...</p>
         ) : (
           <ul className="space-y-2">
-            {users?.map((user) => (
+            {users?.map((user:any) => (
               <li
                 key={user._id}
                 className={`flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer ${
@@ -51,7 +49,7 @@ const AdminMessages = () => {
           <ChatWindow userId={selectedUser} />
         </div>
       ) : (
-        <div className="w-3/4 bg-gray-50 p-4">
+        <div className="w-3/4 bg-gray-50 p-4 ">
           <p className="text-center text-gray-500">Select a user to start chatting</p>
         </div>
       )}

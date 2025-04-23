@@ -14,45 +14,55 @@ import { useEffect, useState } from "react";
 import { useGetKiosks } from "@/hooks/useAdmin";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import Loading from "@/components/Loading";
+import AdminError from "@/components/Admin/AdminError";
 
-
+//constant
 const LIMIT = 10;
 
 const KioskManagement = () => {
-
-   const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const navigate = useNavigate()
 
-  const {data,isError,isLoading} = useGetKiosks({page,limit:LIMIT})
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
 
-
-  console.log(data,"data from api")
-   
-     const kiosks = data?.kiosks || [];
-    const totalPages = data?.totalPages || 1;
-
-
-    const navigate = useNavigate()
-  
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearch(e.target.value);
-      setPage(1);
+    return () => {
+      clearTimeout(handler); 
     };
+  }, [search]);
 
-    const handleAddKiosk =  () => {
-      navigate(`/admin/addkiosk`)
-    }
+  const {data,isError,isLoading,refetch} = useGetKiosks({page,limit:LIMIT,search: debouncedSearch,})
 
 
-    const handleEditKiosk = (id: string) => {
-      console.log(id, "go fetch individual kiosk and paint on edit kiosk")
-      navigate(`/admin/editkiosk/${id}`)
-    }
+  const kiosks = data?.kiosks || [];
+  const totalPages = data?.totalPages || 1;
+
+
+   
+  
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
+
+  const handleAddKiosk =  () => {
+    navigate(`/admin/addkiosk`)
+  }
+
+
+  const handleEditKiosk = (id: string) => {
+     navigate(`/admin/editkiosk/${id}`)
+  }
 
   
   
-    if (isLoading) return <p>Loading ...</p>;
-    if (isError) return <p>Error....</p>;
+    if (isLoading) return <Loading />;
+    if (isError) return <AdminError message="Fetching Kiosk" retry={refetch} />;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -68,7 +78,7 @@ const KioskManagement = () => {
 
       <div className="mt-4 flex flex-col md:flex-row items-center justify-between gap-4">
         <Input
-          placeholder="🔍 Search by name or email"
+          placeholder="🔍 Search by kiosk name"
           value={search}
           onChange={handleSearch}
           className="w-full sm:w-3/4 md:w-1/2 lg:w-[400px] xl:w-[350px]"
@@ -79,7 +89,7 @@ const KioskManagement = () => {
    
     </CardHeader>
 
-    {/*Card Content - table/select - whatever you want you can use inside card content i guess */}
+    {/*Card Content */}
     <CardContent className="overflow-x-auto">
       <Table>
         <TableCaption>A list of all registered kiosks.</TableCaption>
