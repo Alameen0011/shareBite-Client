@@ -1,3 +1,5 @@
+import CommonError from "@/components/CommonError";
+import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,12 +14,14 @@ import { Label } from "@/components/ui/label";
 import { useProfile } from "@/hooks/useProfile";
 import { profileSchema } from "@/validations/Profile/profile";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronRight } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 import { z } from "zod";
+import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
+
 
 type FormData = z.infer<typeof profileSchema>;
 
@@ -25,7 +29,9 @@ const Profile = () => {
   const { updateProfile, getProfile } = useProfile();
 
   const { mutateAsync, isPending } = updateProfile;
-  const { data, isLoading, isError: Error } = getProfile;
+  const { data, isLoading, isError: Error,refetch } = getProfile;
+
+  const navigate = useNavigate()
 
   const {
     register,
@@ -36,16 +42,17 @@ const Profile = () => {
 
   const handleUpdateProfile = async (data: FormData) => {
     try {
-      console.log(data, "profile data after validation");
       const res = await mutateAsync(data);
 
       if (res.success) {
         toast.success("profile updated successfully");
-      } else {
-        toast.error("something wrong happened");
+        navigate("/")
+
       }
     } catch (error) {
-      console.log(error);
+            const axiosError = error as AxiosError<{ message?: string }>;
+            const message = axiosError.response?.data?.message || axiosError.message || "Something went wrong. Please try again.";
+            toast.error(message);
     }
   };
 
@@ -59,23 +66,17 @@ const Profile = () => {
     }
   }, [data, reset]);
 
-  if (isLoading) return <p className="text-center mt-10">Loading profile...</p>;
-  if (Error)return  <p className="text-center mt-10 text-red-500">Failed to load profile</p>
+  if (isLoading) return <Loading/>;
+  if (Error)return <CommonError message="Error fetching profile" retry={refetch}/>
   
 
   return (
-    <div className=" p-6 space-y-6 m-10">
-      <div className="mb-6 ml-56 flex items-center gap-2 text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-foreground">
-          Home
-        </Link>
-        <ChevronRight className="h-4 w-4" />
-        <Link to="/" className="hover:text-foreground">
-          Accounts
-        </Link>
-        <ChevronRight className="h-4 w-4" />
-        <span className="text-foreground  font-medium ">Profile</span>
-      </div>
+    <motion.div className=" p-6 space-y-6 m-10"
+      initial={{opacity:0,y:20}}
+      animate={{opacity:1,y:0}}
+      transition={{ duration: 0.6 }}
+    >
+    
 
       <Card className="w-full  max-w-2xl bg-gray-50 mx-auto">
         <CardHeader>
@@ -144,7 +145,7 @@ const Profile = () => {
           </CardFooter>
         </form>
       </Card>
-    </div>
+    </motion.div>
   );
 };
 

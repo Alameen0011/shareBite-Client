@@ -5,7 +5,6 @@ import Signup from "@/pages/auth/Signup";
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import { createBrowserRouter } from "react-router-dom";
-// import AuthWrapper from "@/routes/ProtectedRoutes/AuthWrapper";
 import ProtectedRoute from "@/routes/ProtectedRoutes/ProtectedRoute";
 import DonorDashboard from "@/pages/donor/DonorDashboard";
 import AddDonation from "@/pages/donor/AddDonation";
@@ -23,6 +22,19 @@ import VolunteerKioskOtp from "@/pages/volunteer/VolunteerKioskOtp";
 import DeliverySuccess from "@/pages/volunteer/DeliverySuccess";
 import Profile from "@/pages/profile/Profile";
 import Support from "@/pages/Support";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import UserManagement from "@/pages/admin/UserManagement";
+import AdminLayout from "@/layouts/AdminLayout";
+import KioskManagement from "@/pages/admin/KioskManagement";
+import AddKiosk from "@/pages/admin/AddKiosk";
+import EditKiosk from "@/pages/admin/EditKiosk";
+import AdminMessages from "@/pages/admin/AdminMessages";
+import AdminLogin from "@/pages/admin/auth/AdminLogin";
+import VerifyAdminLogin from "@/pages/admin/auth/VerifyAdminLogin";
+import AdminAuthWrapper from "./ProtectedRoutes/AdminAuthWrapper";
+import VedioRoom from "@/components/VedioCall/VedioRoom";
+import Blocked from "@/pages/Blocked";
+
 
 
 export const router = createBrowserRouter([
@@ -39,7 +51,7 @@ export const router = createBrowserRouter([
     },
     {
         path: "/auth",
-        element: <AuthWrapper/>,
+        element: <AuthWrapper roles={["donor","volunteer"]}/>,
         children: [
             { path: "login" , element : <Login/>},
             { path: "signup" , element : <Signup/>},
@@ -93,7 +105,7 @@ export const router = createBrowserRouter([
       {
         path: "/support",
         element: (
-          <ProtectedRoute roles={["volunteer","donor"]} >
+          <ProtectedRoute roles={["volunteer","donor","admin"]} >
             <MainLayout/>
             </ProtectedRoute>
         ),
@@ -101,8 +113,44 @@ export const router = createBrowserRouter([
           { path: "", element: <Support /> },
         ]
       },
+      {
+        path: "/video-room/:roomID",
+        children: [
+          {
+            path: "",
+            element: <VedioRoom />,
+          },
+        ],
+      },
+
+      {
+        path: "/admin",
+        element: (
+          <ProtectedRoute roles= {["admin"]} >
+             <AdminLayout/>
+          </ProtectedRoute>
+        ),
+        children: [
+          { path: "",element: <AdminDashboard /> },
+          { path: "user/management",element: <UserManagement /> },
+          { path: "kiosk/management",element: <KioskManagement /> },
+          { path: "addkiosk",element: <AddKiosk /> },
+          { path: "editkiosk/:id",element: <EditKiosk /> },
+          { path: "communications",element: <AdminMessages /> },
+
+        ]
+      },
+      {
+        path: "/admin/auth",
+        element: <AdminAuthWrapper/>,
+        children: [
+          { path: "", element: <AdminLogin/> }, 
+          { path: "verify-login", element: <VerifyAdminLogin/> }, 
+        ]
+      },
 
 
     { path: "*" , element: <NotFound/> },
     { path: "/unauthorized", element: <Unauthorized /> },
+    { path: "/blocked",element:<Blocked /> }
 ])

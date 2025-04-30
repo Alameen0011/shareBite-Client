@@ -1,4 +1,5 @@
 import { useVolunteer } from "@/hooks/useVolunteer";
+import { AxiosError } from "axios";
 import { Utensils } from "lucide-react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -63,13 +64,13 @@ const VolunteerOtp = () => {
   //handle verification
   const handleVerify = async () => {
     const derivedOtp = otp.join("");
-    const dataToSend = { id: donationId, derivedOtp };
+    
+    const dataToSend:{id:string,derivedOtp:string} = { id: donationId, derivedOtp };
 
     try {
       const res = await mutateAsync(dataToSend);
       if (res.success) {
         toast.success("Picked up successfully");
-
         navigate("/volunteer/kiosk/navigation", {
           state: {
              coordinates,
@@ -78,13 +79,14 @@ const VolunteerOtp = () => {
         });
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong. Try again.");
+       const axiosError = error as AxiosError<{ message?: string }>;
+         const message = axiosError.response?.data?.message || axiosError.message ||"Something went wrong. Please try again.";
+         toast.error(message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br  flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br  flex items-center justify-center p-4 font-primary">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         <div className="flex items-center justify-center mb-8">
           <Utensils className="w-10 h-10 text-green-600 mr-3" />

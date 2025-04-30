@@ -24,12 +24,11 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      dispatch(logout());
-      const res = await mutateAsync();
-      console.log(res, "========res");
+      const res = await mutateAsync(); // Logout from server first
       if (res.success) {
-        toast(res.message);
         dispatch(disconnectSocket());
+        dispatch(logout()); // Now clear Redux + localStorage
+        toast(res.message);
         navigate('/');
       }
 
@@ -39,98 +38,96 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-white shadow-md z-50">
+    <nav className="fixed top-0 left-0 w-full bg-white shadow-md z-50 font-primary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center">
+          <div className="flex items-center">
             <Plate className="h-8 w-8 text-emerald-600" />
-            <span className="ml-2 text-xl font-bold text-gray-800">
-              ShareBite
-            </span>
+            <span className="ml-2 text-xl font-bold text-gray-800">ShareBite</span>
           </div>
 
-          {/* Center Navigation Links */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-8">
-            <Link to="/" className="text-gray-600 hover:text-emerald-600 transition-colors duration-200">Home</Link>
-            <Link to="/about" className="text-gray-600 hover:text-emerald-600 transition-colors duration-200">About</Link>
-
+          {/* Center Links (Desktop Only) */}
+          <div className="hidden md:flex items-center space-x-8">
+            <Link to="/" className="text-gray-600 hover:text-emerald-600 transition-colors">Home</Link>
+            <Link to="/about" className="text-gray-600 hover:text-emerald-600 transition-colors">About</Link>
             {!isAuthenticated && (
-              <Link to="/auth/signup?role=donor" className="text-gray-600 hover:text-emerald-600 transition-colors duration-200">
-                Donate
-              </Link>
+              <Link to="/auth/signup?role=donor" className="text-gray-600 hover:text-emerald-600 transition-colors">Donate</Link>
             )}
           </div>
 
-          {/* Right-side Role-based + Profile/Login */}
-          <div className="hidden md:flex items-center space-x-6 ml-auto pr-2">
+          {/* Right Side (Desktop Only) */}
+          <div className="hidden md:flex items-center space-x-6">
             {isAuthenticated && role === "donor" && (
               <>
-                <Link to="/donor/dashboard" className="text-gray-600 hover:text-emerald-600 transition-colors duration-200">Donor Dashboard</Link>
-                <Link to="/donor/add-donation" className="text-gray-600 hover:text-emerald-600 transition-colors duration-200">Add Donation</Link>
+                <Link to="/donor/dashboard" className="text-gray-600 hover:text-emerald-600 transition-colors">Donor Dashboard</Link>
+                <Link to="/donor/add-donation" className="text-gray-600 hover:text-emerald-600 transition-colors">Add Donation</Link>
               </>
             )}
-
             {isAuthenticated && role === "volunteer" && (
-              <>
-                <Link to="/volunteer/dashboard" className="text-gray-600 hover:text-emerald-600 transition-colors duration-200">Volunteer Dashboard</Link>
-              </>
+              <Link to="/volunteer/dashboard" className="text-gray-600 hover:text-emerald-600 transition-colors">Volunteer Dashboard</Link>
             )}
-
+            {isAuthenticated && role === "admin" && (
+              <Link to="/admin" className="text-gray-600 hover:text-emerald-600 transition-colors">Admin Dashboard</Link>
+            )}
             {isAuthenticated ? (
               <ProfileDropdown />
             ) : (
               <Link
                 to="/auth/login"
-                className="px-5 py-2 bg-emerald-600 text-white font-medium rounded-lg shadow-md hover:bg-emerald-700 transform hover:-translate-y-0.5 transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                className="px-5 py-2 bg-emerald-600 text-white rounded-lg shadow-md hover:bg-emerald-700 transition"
               >
                 Login
               </Link>
             )}
           </div>
-        </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <button onClick={toggleMenu} className="text-gray-600 hover:text-emerald-600 focus:outline-none">
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden">
+            <button onClick={toggleMenu} className="text-gray-600 hover:text-emerald-600 focus:outline-none">
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a href="/" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50">
-              Home
-            </a>
-            <a href="/about" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50">
-              About
-            </a>
-            <a href="/donate" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50">
-              Donate
-            </a>
-            <a href="/contact" className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-emerald-600 hover:bg-gray-50">
-              Contact
-            </a>
+        <div className="md:hidden px-4 pb-4 space-y-2 bg-white shadow-md">
+          <Link to="/" className="block px-3 py-2 rounded text-gray-700 hover:text-emerald-600 hover:bg-gray-50">Home</Link>
+          <Link to="/about" className="block px-3 py-2 rounded text-gray-700 hover:text-emerald-600 hover:bg-gray-50">About</Link>
+          {!isAuthenticated && (
+            <Link to="/auth/signup?role=donor" className="block px-3 py-2 rounded text-gray-700 hover:text-emerald-600 hover:bg-gray-50">Donate</Link>
+          )}
 
-            {isAuthenticated ? (
-              <button
-                onClick={handleLogout}
-                className="w-full mt-2 px-4 py-2 bg-red-600 text-white font-medium rounded-lg shadow-md hover:bg-red-700 transform hover:-translate-y-0.5 transition-all duration-200 focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-              >
-                Logout
-              </button>
-            ) : (
-              <Link
-                to="/auth/login"
-                className="w-full mt-2 px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg shadow-md hover:bg-emerald-700 transform hover:-translate-y-0.5 transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-              >
-                Login
-              </Link>
-            )}
-          </div>
+          {isAuthenticated && role === "donor" && (
+            <>
+              <Link to="/donor/dashboard" className="block px-3 py-2 rounded text-gray-700 hover:text-emerald-600 hover:bg-gray-50">Donor Dashboard</Link>
+              <Link to="/donor/add-donation" className="block px-3 py-2 rounded text-gray-700 hover:text-emerald-600 hover:bg-gray-50">Add Donation</Link>
+            </>
+          )}
+          {isAuthenticated && role === "volunteer" && (
+            <Link to="/volunteer/dashboard" className="block px-3 py-2 rounded text-gray-700 hover:text-emerald-600 hover:bg-gray-50">Volunteer Dashboard</Link>
+          )}
+          {isAuthenticated && role === "admin" && (
+            <Link to="/admin" className="block px-3 py-2 rounded text-gray-700 hover:text-emerald-600 hover:bg-gray-50">Admin Dashboard</Link>
+          )}
+
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="w-full mt-2 px-4 py-2 bg-red-400 text-white rounded-lg shadow-md hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/auth/login"
+              className="w-full mt-2 block text-center px-4 py-2 bg-emerald-600 text-white rounded-lg shadow-md hover:bg-emerald-700 transition"
+            >
+              Login
+            </Link>
+          )}
         </div>
       )}
     </nav>

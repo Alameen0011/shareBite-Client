@@ -1,11 +1,12 @@
 import { useVolunteer } from "@/hooks/useVolunteer";
+import { AxiosError } from "axios";
 import { Utensils } from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const VolunteerKioskOtp = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
   const navigate = useNavigate();
 
@@ -49,25 +50,28 @@ const VolunteerKioskOtp = () => {
 
   const handleVerify = async () => {
     const derivedOtp = otp.join("");
+    if (!id) {
+      toast.error("Missing ID in URL");
+      return;
+    }
+    const apiData:{id:string,otp:string} = {id,otp:derivedOtp}
+
 
     try {
-      const res = await mutateAsync({ id, otp: derivedOtp });
-      console.log(res, "response");
+      const res = await mutateAsync(apiData);;
       if (res.success) {
-        console.log("success");
-        toast.success("delivered successully");
+        toast.success("Delivered successfully");
         navigate("/volunteer/deliverySuccess");
-      } else {
-        toast.error("something wrong happened");
       }
     } catch (error) {
-      console.log(error, ": verification error");
-      toast.error("something wrong happened");
+       const axiosError = error as AxiosError<{ message?: string }>;
+         const message = axiosError.response?.data?.message || axiosError.message ||"Something went wrong. Please try again.";
+         toast.error(message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br  flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br  flex items-center justify-center p-4 font-tertiary">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         <div className="flex items-center justify-center mb-8">
           <Utensils className="w-10 h-10 text-green-600 mr-3" />

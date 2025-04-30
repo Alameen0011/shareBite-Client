@@ -1,14 +1,17 @@
 import axiosInstance from "@/api/axiosInstance"
 import { GetDonationResponse, GetSingleDonationResponse, UpdateDonationArgs, UpdateDonationResponse } from "@/types/donation"
+import { donationSchema } from "@/validations/donation/addDonation";
 import { useMutation, useQuery, useQueryClient} from "@tanstack/react-query"
+import { z } from "zod";
 
+type FormData = z.infer<typeof donationSchema>;
 
 export const useDonation = () => {
 
     const queryClient = useQueryClient()
 
     const createDonation = useMutation({
-        mutationFn: async (data) => {
+        mutationFn: async (data:FormData) => {
             const response = await axiosInstance.post("/donor/donations",data)
             return response.data
         },

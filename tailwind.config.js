@@ -7,6 +7,13 @@ export default {
   ],
   theme: {
     extend: {
+
+      fontFamily: {
+        primary: ['Poppins', 'sans-serif'],       // Primary font (Poppins)
+        secondary: ['Lato', 'sans-serif'],        // Secondary font (Lato)
+        tertiary: ['Inter', 'sans-serif'],       // Tertiary font (Inter)
+      },
+
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
