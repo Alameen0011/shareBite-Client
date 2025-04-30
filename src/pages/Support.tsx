@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { VideoIcon } from "lucide-react";
+import {motion} from "framer-motion"
 
 interface Message {
   senderId: string;
@@ -29,11 +30,11 @@ const SupportChat = () => {
 
   const { accessToken,role } = useSelector((state: RootState) => state.auth);
   const userId = getUserIdFromToken(accessToken!);
-  const RoomID = `support-${userId}`;
+  const roomID = `support-${userId}`;
  
 
   const handleVideoCall = () => {
-    const videoURL = `${window.location.origin}/video-room/${RoomID}`;
+    const videoURL = `${window.location.origin}/video-room/${roomID}`;
     window.open(videoURL, "_blank");
 
   
@@ -42,7 +43,7 @@ const SupportChat = () => {
     if (socket && socket.connected) {
       socket.emit("call_Request", {
         from: userId,
-        RoomID,
+        roomID,
         role,
       });
     }
@@ -69,6 +70,7 @@ const SupportChat = () => {
       socket.off("call_declined", handleDecline); 
     };
   }, []);
+
 
   useEffect(() => {
     const socket = getSocket(); // Singleton socket
@@ -98,7 +100,10 @@ const SupportChat = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row h-[700px] m-10">
+    <motion.div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row h-[700px] m-10 font-primary"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6 }}>
       {/* Left Info Panel */}
       <div className="w-full md:w-1/3 bg-gradient-to-br from-blue-100 to-purple-100 p-6 flex flex-col justify-center items-center text-center">
         <img
@@ -128,7 +133,7 @@ const SupportChat = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+        <div className="flex-1 overflow-y-auto space-y-3 pr-1 font-tertiary">
           {(messages?.length ?? 0) > 0 ? (
             messages.map((msg, idx) => (
               <div
@@ -143,22 +148,10 @@ const SupportChat = () => {
               </div>
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 px-4 border rounded-lg bg-muted/30">
-              <div className="text-center">
-                <h3 className="text-lg font-medium mb-2">No Messages yet</h3>
-                <p className="text-muted-foreground mb-6">
-                  You haven't Got any Messages yet. Click the Donate button to
-                  get started.
-                </p>
-                <Button
-                  // onClick={() => navigate("/donor/add-donation")}
-                  className="flex items-center gap-2"
-                >
-                  <PlusCircle className="h-4 w-4" />
-                  <span>No messages Yet</span>
-                </Button>
-              </div>
-            </div>
+            <div className="flex flex-col items-center justify-center py-12 px-6 border rounded-lg bg-muted/10 shadow-md space-y-4">
+            <h3 className="text-2xl font-semibold text-gray-800">Any queries 👀? start messaging</h3>
+            <p className="text-sm text-muted-foreground">You haven't received any messages yet. Stay tuned!</p>
+          </div>
           )}
         </div>
 
@@ -179,7 +172,7 @@ const SupportChat = () => {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

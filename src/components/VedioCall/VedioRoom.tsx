@@ -6,6 +6,7 @@ import { getUserIdFromToken } from '@/utils/jwtDecode';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store';
 
+
 const VedioRoom = () => {
     //room id - something unique
     const { roomID } = useParams()
@@ -23,6 +24,9 @@ const VedioRoom = () => {
 
     //A name for config
     const userName ="GUEST"
+
+
+ 
 
     //Zego cloud config
     useEffect(() => {

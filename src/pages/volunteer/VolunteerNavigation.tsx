@@ -28,7 +28,7 @@ const VolunteerNavigation = () => {
   };
 
   return (
-    <div className="space-y-6 m-10 flex flex-col mx-auto items-center max-w-2xl w-full">
+    <div className="space-y-6 m-10 flex flex-col mx-auto items-center max-w-2xl w-full font-tertiary">
       <VolunteerRouteMap pickupLocation={coordinates} />
       <Button
         onClick={handlePickup}

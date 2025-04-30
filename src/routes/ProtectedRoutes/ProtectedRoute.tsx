@@ -18,7 +18,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ roles , children }) => 
 
     if(!isAuthenticated){
         console.log('you fucked up')
-        return <Navigate to = "/auth/signup" replace />
+        return <Navigate to = "/admin/auth" replace />
     }
 
     if (!roles.includes(role)){

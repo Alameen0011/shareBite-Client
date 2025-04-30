@@ -4,7 +4,7 @@ import Login from "@/pages/auth/Login";
 import Signup from "@/pages/auth/Signup";
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "@/routes/ProtectedRoutes/ProtectedRoute";
 import DonorDashboard from "@/pages/donor/DonorDashboard";
 import AddDonation from "@/pages/donor/AddDonation";

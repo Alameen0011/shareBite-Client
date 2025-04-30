@@ -1,21 +1,27 @@
 import { getSocket } from "@/api/socket"
 import AdminError from "@/components/Admin/AdminError"
 import DonationTrendChart from "@/components/Admin/DonationTrendChart"
+import Loading from "@/components/Loading"
 import { useAdmin } from "@/hooks/useAdmin"
 import { useEffect } from "react"
 import { toast } from "sonner"
 
 const AdminDashboard = () => {
 
-  const {getDonationTrend,getTotalDonations,getTotalDonors,getTotalKiosks,getTotalVolunteers,getTopDonors,getTopVolunteers} = useAdmin()
-  const {data: trend, isLoading:loadingTrend , isError} = getDonationTrend
-  const {data:totalDonations} = getTotalDonations
-  const {data:totalVolunteers} = getTotalVolunteers
-  const {data:totalDonors} = getTotalDonors
-  const {data:totalKiosks} = getTotalKiosks
-  const {data:topDonors} = getTopDonors
-  const {data:topVolunteers} = getTopVolunteers
 
+
+  const {getAdminDashboardOverview} = useAdmin() 
+
+  const {data,isLoading,isError} = getAdminDashboardOverview
+
+  const totalDonations = data?.totalDonations ?? 0;
+const totalVolunteers = data?.totalVolunteers ?? 0;
+const totalDonors = data?.totalDonors ?? 0;
+const totalKiosks = data?.totalKiosks ?? 0;
+const trend = data?.trend ?? [];
+const topDonors = data?.topDonors ?? [];
+const topVolunteers = data?.topVolunteers ?? [];
+ 
 
 
   useEffect(() => {
@@ -23,6 +29,10 @@ const AdminDashboard = () => {
     if (!socket) return;
   
     const handleVideoCallRequested = ({ from, roomID, role }:{from:string,roomID:string,role:string}) => {
+      console.log("inside the vediocall Requested function in adminDashboard")
+      console.log(from,"from")
+      console.log(roomID,"from")
+      console.log(from,"from")
 
       const callUrl = `${import.meta.env.VITE_CLIENT_URL}/video-room/${roomID}`;
   
@@ -52,6 +62,7 @@ const AdminDashboard = () => {
   
 
 
+  if(isLoading) return <Loading />
   if(isError) return <AdminError />
 
   return (
@@ -59,7 +70,7 @@ const AdminDashboard = () => {
     <h1 className="text-2xl font-bold my-6">Admin Dashboard</h1>
 
     {/* Summary Cards */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 font-tertiary">
       <StatCard label="Total Donations" value={totalDonations} />
       <StatCard label="Total Volunteers" value={totalVolunteers} />
       <StatCard label="Total Donors" value={totalDonors} />
@@ -68,14 +79,12 @@ const AdminDashboard = () => {
 
     {/* Trend Chart */}
     <div className="p-6 bg-white rounded-xl shadow">
-      {loadingTrend ? (
-        <p>Loading trend chart...</p>
-      ) : (
+     
         <DonationTrendChart data={trend || []} />
-      )}
+
     </div>
     
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 font-primary">
   <TopListCard title="Top 5 Donors" data={topDonors} field="donationsCount" />
   <TopListCard title="Top 5 Volunteers" data={topVolunteers} field="pickupsCount" />
 </div>

@@ -1,4 +1,6 @@
 import { getSocket } from "@/api/socket";
+import CommonError from "@/components/CommonError";
+import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import { useDonation } from "@/hooks/useDonation";
 import { IsoToReadableFormat } from "@/utils/dateUtils";
@@ -6,16 +8,17 @@ import { PlusCircle } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import {motion} from "framer-motion"
 
-interface IncomeParams {
-  donationId: string,
-  volunteerId: string
-}
+// interface IncomeParams {
+//   donationId: string,
+//   volunteerId: string
+// }
 
 const DonorDashboard = () => {
   const { getDonations } = useDonation();
 
-  const { data, isLoading, error } = getDonations;
+  const { data, isLoading, isError,refetch } = getDonations;
   const navigate = useNavigate();
 
   const handleAddDonation = (): void => {
@@ -34,24 +37,18 @@ const DonorDashboard = () => {
 
 
     
-    const handleDonationPickedUp = ({donationId, volunteerId}: IncomeParams ) => {
-      console.log("toast message by volunteer on successfull pickup")
-      console.log("donation Id",donationId)
-      console.log("volunteer Id",volunteerId)
+    const handleDonationPickedUp = () => {
       toast.success(" 🚀 Your donation has been successfully picked up")
     }
 
-   const handleDonationDelivery = ({donationId, volunteerId}: IncomeParams) => {
-    console.log("toast to donor on successfull deliver")
-    console.log("donation Id",donationId)
-    console.log("volunteer Id",volunteerId)
+   const handleDonationDelivery = () => {
     toast.success(" 🚀 Your donation has been successfully delivered")
    }
 
 
-   socket.on("donationPickedUp",handleDonationPickedUp) //test needed
+   socket.on("donationPickedUp",handleDonationPickedUp)
 
-   socket.on("donationDelivery",handleDonationDelivery)//test needed
+   socket.on("donationDelivery",handleDonationDelivery)
 
 
    return () => {
@@ -64,57 +61,74 @@ const DonorDashboard = () => {
 
 
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (isLoading) return <Loading/>;
+  if (isError) return <CommonError message="Error fetching donations.." retry={refetch} />
 
   return (
-    <div className="space-y-6 m-10 ">
+    <motion.div className="space-y-6 m-10 "
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3 }}
+    
+    >
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold tracking-tight">My Donations</h1>
-        <Button onClick={handleAddDonation} className="flex items-center gap-2">
+        <h1 className="text-3xl font-bold tracking-tight font-tertiary">My Donations</h1>
+        <Button onClick={handleAddDonation} className="flex items-center gap-2 font-tertiary">
           <PlusCircle className="h-4 w-4" />
           <span>Donate</span>
         </Button>
       </div>
       {(data?.donations?.length ?? 0) > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  gap-6 font-primary"
+       
+        >
           {data?.donations.map((donation) => (
-            <div
-              key={donation._id}
-              onClick={() => handleViewDonation(donation._id)}
-              className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
-            >
-              <a href="#">
-                <img
-                  className="p-8 rounded-t-lg"
-                  src={donation.image || donation.status}
-                  alt="product image"
-                />
-              </a>
-              <div className="px-5 pb-5">
-                <a href="#">
-                  <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                    {donation.title}
-                  </h5>
-                </a>
-                <div className="flex items-center mt-2.5 mb-5">
-                <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                  status:  {donation.status}
-                  </span>
-
-                 
-                </div>
-                <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                    {donation.pickupLocation.address}
-                  </h5>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {donation.expiry? IsoToReadableFormat(donation.expiry) : "" }
-                  </span>
-                </div>
-              </div>
+        <div
+        key={donation._id}
+        onClick={() => handleViewDonation(donation._id)}
+        className="w-full max-w-sm bg-white dark:bg-gray-900 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer border border-gray-200 dark:border-gray-800"
+      >
+        <img
+          src={donation.image}
+          alt={donation.title}
+          className="h-48 w-full object-cover"
+        />
+      
+        <div className="p-5 space-y-3">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">{donation.title}</h3>
+      
+          <div className="flex items-center justify-between text-sm">
+            <span className="px-2 py-1 rounded-full text-white bg-black dark:bg-green-600 text-xs">
+            {(donation.status as string)?.replaceAll("_", " ")}
+            </span>
+            <span className="text-gray-500 dark:text-gray-400 text-xs">
+              {IsoToReadableFormat(donation.createdAt)}
+            </span>
+          </div>
+      
+          <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
+            {donation.pickupLocation.address}
+          </p>
+      
+          <div className="flex flex-wrap gap-2 mt-2 text-xs text-gray-600 dark:text-gray-400">
+            <span className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+              Qty: {donation.quantity}
+            </span>
+            <span className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded capitalize">
+              Type: {donation.type}
+            </span>
+            <span className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+              Donor : {donation.donor?.name}
+            </span>
+          </div>
+      
+          {donation.expiry && (
+            <div className="text-xs text-red-500 mt-1 font-medium">
+              Expires: {IsoToReadableFormat(donation.expiry)}
             </div>
+          )}
+        </div>
+      </div>
           ))}
         </div>
       ) : (
@@ -135,7 +149,7 @@ const DonorDashboard = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

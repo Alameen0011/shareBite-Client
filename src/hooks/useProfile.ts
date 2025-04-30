@@ -1,11 +1,15 @@
 import axiosInstance from "@/api/axiosInstance"
+import { profileSchema } from "@/validations/Profile/profile";
 import { useMutation, useQuery} from "@tanstack/react-query"
+import { z } from "zod";
 
+
+type FormData = z.infer<typeof profileSchema>;
 
 export const useProfile = () => {
 
     const updateProfile = useMutation({
-        mutationFn: async (data) => {
+        mutationFn: async (data:FormData) => {
             const response = await axiosInstance.post("/profile/updateProfile",data)
             return response.data
         }

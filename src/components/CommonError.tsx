@@ -6,7 +6,7 @@ interface ErrorProps {
     retry?: () => void;
   }
 
-const Error = ({ message = "Something went wrong.", retry }: ErrorProps) => {
+const CommonError = ({ message = "Something went wrong.", retry }: ErrorProps) => {
     const navigate = useNavigate()
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
@@ -27,4 +27,4 @@ const Error = ({ message = "Something went wrong.", retry }: ErrorProps) => {
     );
   };
 
-export default Error
+export default CommonError

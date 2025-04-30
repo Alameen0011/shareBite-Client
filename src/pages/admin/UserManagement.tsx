@@ -85,13 +85,13 @@ const UserManagement = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <Card className="p-6 shadow rounded-2xl bg-white">
+      <Card className="p-6 shadow rounded-2xl bg-white font-tertiary">
         {/*Card Header */}
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold">
+          <CardTitle className="text-2xl font-semibold font-primary">
             User Management
           </CardTitle>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground font-tertiary">
             Manage user roles, permissions, and status.
           </p>
 

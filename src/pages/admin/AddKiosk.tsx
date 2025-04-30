@@ -61,7 +61,7 @@ const AddKiosk = () => {
 
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 font-primary">
       <Card className="p-6 shadow rounded-2xl bg-white">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold mx-auto">Add Kiosk</CardTitle>

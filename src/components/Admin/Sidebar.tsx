@@ -40,44 +40,50 @@ const menuItems = [
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
-  // const { adminLogout } = useAdmin();
-  // const { mutateAsync } = adminLogout;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { adminLogout } = useAdmin();
+  const { mutateAsync } = adminLogout;
 
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
-  // const handleLogoutAdmin = async () => {
-  //   try {
-  //     const res = await mutateAsync(); // Logout from server first
-  //     if (res.success) {
-  //       dispatch(disconnectSocket());
-  //       dispatch(logout()); // Now clear Redux + localStorage
-  //       toast(res.message);
-  //       navigate('/admin/auth');
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const handleLogoutAdmin = async () => {
+    try {
+      const res = await mutateAsync(); // Logout from server first
+      if (res.success) {
+        dispatch(disconnectSocket());
+        dispatch(logout()); // Now clear Redux + localStorage
+        toast(res.message);
+        navigate("/admin/auth");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <aside
-      className={`h-screen bg-teal-600 text-white p-3 flex flex-col transition-all duration-300 shadow-md ${
+      className={`h-screen bg-teal-600 font-primary text-white p-3 flex flex-col transition-all duration-300 shadow-md ${
         open ? "w-80" : "w-16"
       }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between h-16 px-2">
+      <div
+        className={`flex items-center h-16 px-2 transition-all duration-300 ${
+          open ? "justify-between" : "justify-center"
+        }`}
+      >
         <div
           className={`transition-all duration-300 origin-left ${
             open ? "scale-100 opacity-100" : "scale-0 opacity-0"
           }`}
         >
-          <p className="text-2xl font-semibold whitespace-nowrap">
-            <span className="text-yellow-500">ShareBite</span>{" "}
-            <span className="text-teal-300">Admin</span>
-          </p>
+          <div className="flex items-center gap-2 overflow-hidden">
+            <span className="text-2xl font-bold ">
+              {open ? "ShareBite" : ""}
+            </span>
+            <span className="text-xl font-semibold text-teal-100"> {open ? "Admin" : ""}</span>
+          </div>
         </div>
 
         <button onClick={() => setOpen(!open)}>
@@ -143,7 +149,7 @@ export default function Sidebar() {
         </div>
 
         {/* Right side: Logout button or icon */}
-        {/* {isAuthenticated && (
+        {isAuthenticated && (
           <>
             {open ? (
               <button
@@ -174,7 +180,7 @@ export default function Sidebar() {
               </button>
             )}
           </>
-        )} */}
+        )}
       </div>
     </aside>
   );

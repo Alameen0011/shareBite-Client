@@ -1,6 +1,8 @@
 import axiosInstance from "@/api/axiosInstance"
+import { RootState } from "@/app/store";
 import { editKioskSchema, kioskSchema } from "@/validations/kiosk/addKiosk";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useSelector } from "react-redux";
 import { z } from "zod";
 
 
@@ -27,6 +29,8 @@ export const useAdmin = () => {
 
     const queryClient = useQueryClient();
 
+    const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+
 
 
     // Auth
@@ -44,12 +48,12 @@ export const useAdmin = () => {
         }
     })
 
-    // const adminLogout = useMutation({
-    //     mutationFn: async () => {
-    //         const response = await axiosInstance.post(`/admin/logout`)
-    //         return response.data
-    //     }
-    // })
+    const adminLogout = useMutation({
+        mutationFn: async () => {
+            const response = await axiosInstance.post(`/admin/logout`)
+            return response.data
+        }
+    })
 
     // User - Management
     const ToggleBlockUser = useMutation({
@@ -97,86 +101,26 @@ export const useAdmin = () => {
           },
     })
 
-
-
-    //admin - dashboard - analytics
-    const getDonationTrend = useQuery({
-        queryKey:["donationTrend"],
+    //admin-dashboard - centralized 
+    const getAdminDashboardOverview = useQuery({
+        queryKey:["dashboardOverview"],
         queryFn: async () => {
-            const response = await axiosInstance.get("/admin/donationTrend")
-            return response.data.trend
+            const response = await axiosInstance.get("/admin/dashboard-overview")
+            return response.data
 
-        }
+        },
+        enabled:!!accessToken
     })
-    const getTotalDonations = useQuery({
-        queryKey:["totalDonations"],
-        queryFn: async () => {
-            const response = await axiosInstance.get("/admin/totalDonations")
-            return response.data.total
-
-        }
-    })
-    const getTotalVolunteers = useQuery({
-        queryKey:["totalVolunteers"],
-        queryFn: async () => {
-            const response = await axiosInstance.get("/admin/totalVolunteers")
-            return response.data.total
-
-        }
-    })
-    const getTotalDonors = useQuery({
-        queryKey:["totalDonors"],
-        queryFn: async () => {
-            const response = await axiosInstance.get("/admin/totalDonors")
-            return response.data.total
-
-        }
-    })
-    const getTotalKiosks = useQuery({
-        queryKey:["totalKiosks"],
-        queryFn: async () => {
-            const response = await axiosInstance.get("/admin/totalKiosks")
-            return response.data.total
-
-        }
-    })
-
-
-    const getTopDonors = useQuery({
-        queryKey:["topDonors"],
-        queryFn: async () => {
-            const response = await axiosInstance.get("/admin/top-donors")
-            return response.data.topDonors
-        }
-    })
-
-    const getTopVolunteers = useQuery({
-        queryKey:["topVolunteers"],
-        queryFn: async () => {
-            const response = await axiosInstance.get("/admin/top-volunteers")
-            return response.data.topVolunteers
-        }
-    })
-
-    
-
-
-
     return {
         loginMutation,
         verifyLoginMutation,
-        // adminLogout,
+        adminLogout,
         ToggleBlockUser,
         addKiosk,
         editKiosk,
         deleteKiosk,
-        getDonationTrend,
-        getTotalDonations,
-        getTotalDonors,
-        getTotalVolunteers,
-        getTotalKiosks,
-        getTopDonors,
-        getTopVolunteers
+      
+        getAdminDashboardOverview,
 
     }
 }
@@ -215,7 +159,10 @@ export const  useGetKiosks = ({ page,limit,search }:GetKiosksParams) => {
                 }
             })
             return response.data
-        }
+        },
+        enabled: !!page && !!limit,
+        placeholderData: (previousData) => previousData,
+
     })
 }  
 

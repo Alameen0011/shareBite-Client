@@ -17,7 +17,7 @@ const AdminMessages: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-1/4 bg-white shadow-lg p-4 overflow-y-auto">
+      <div className="w-1/4 bg-white shadow-lg p-4 overflow-y-auto font-tertiary">
         <h2 className="text-xl font-semibold mb-4">Messages</h2>
         {isLoading ? (
           <p>Loading users...</p>

@@ -43,7 +43,7 @@ const VerifyAdminLogin = () => {
                   dispatch(setAccessToken({ token, role }));
                   console.log("dispatcching to connect socket slice action")
                   dispatch(connectSocket({token}))
-                  navigate("admin/dashboard");
+                  navigate("/admin");
               }
                 
             } catch (error) {

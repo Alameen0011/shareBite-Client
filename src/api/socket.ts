@@ -2,13 +2,6 @@ import { io, Socket } from "socket.io-client";
 
 let socket: Socket | null = null;
 
-// export const initializeSocket = (token: string) => {
-//   socket = io(import.meta.env.VITE_SOCKET_URL, {
-//     auth: { token },
-//     transports: ["websocket"],
-//   });
-//   console.log("Socket client:",socket)
-// };
 
 export const initializeSocket = (token: string) => {
   if (socket && socket.connected) {

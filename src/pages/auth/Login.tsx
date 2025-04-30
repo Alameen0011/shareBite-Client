@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import {  Card, CardContent,  CardFooter, CardHeader,} from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { loginSchema } from "@/validations/auth/login";
@@ -7,49 +12,58 @@ import { HandPlatter as Plate } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FC } from "react"
-import { z } from "zod"
+import { FC } from "react";
+import { z } from "zod";
 import GoogleAuth from "./GoogleAuth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
 
-type FormData = z.infer<typeof loginSchema>
+type FormData = z.infer<typeof loginSchema>;
 
 const Login: FC = () => {
   const { loginMutation } = useAuth();
 
-  const { mutateAsync ,isPending } = loginMutation;
+  const { mutateAsync, isPending } = loginMutation;
 
-  const { register,handleSubmit,formState: { errors },} = useForm<FormData>({ resolver: zodResolver(loginSchema) });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({ resolver: zodResolver(loginSchema) });
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
+  {
+    /*handle Login */
+  }
   const handleUserLogin = async (data: FormData) => {
-    console.log(data, "data after proper validation");
-
     try {
       const res = await mutateAsync(data);
-      console.log(res);
-      if(res?.success){
-        toast("please check you email")
-      }else{
-        toast.error(res?.message || "Login failed. please try again later")
+      if (res?.success) {
+        toast("please check you email");
+      } else {
+        toast.error(res?.message || "Login failed. please try again later");
       }
-    } catch (err) {
-      console.log(err,"error")
-      if (err.response?.data?.error === "blocked") {
-        toast.error("Your account has been blocked.")
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      const message =
+        axiosError.response?.data?.message ||
+        axiosError.message ||
+        "Something went wrong. Please try again.";
+
+      if (axiosError.response?.data?.error === "blocked") {
+        toast.error("Your account has been blocked.");
         // Optional: redirect to a blocked screen
-        navigate("/blocked")
-        return
+        navigate("/blocked");
+        return;
       }
-    
-      // Other errors
-      toast.error("Login failed")
+
+      toast.error(message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b flex flex-col items-center justify-center p-4 font-primary">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-neutral-200/50 bg-[size:20px_20px] pointer-events-none" />
 
@@ -83,14 +97,18 @@ const Login: FC = () => {
                   placeholder="name@example.com"
                   className="w-full"
                 />
-                 <div className="min-h-[10px]">
+                <div className="min-h-[10px]">
                   {errors.email && (
                     <span className="text-red-500 text-sm">
                       {errors.email.message}
                     </span>
                   )}
                 </div>
-                <Button type="submit" disabled={isPending} className="w-full bg-emerald-600">
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="w-full bg-emerald-600"
+                >
                   Send Magic Link
                 </Button>
               </div>
@@ -107,12 +125,20 @@ const Login: FC = () => {
               </div>
             </div>
 
- 
-             <GoogleAuth/>
-      
+            <GoogleAuth />
+            <div className="text-center mt-4">
+              <span className="text-sm text-neutral-600">
+                Admin?{" "}
+                <Link
+                  to="/admin/auth"
+                  className="text-emerald-600 hover:underline font-medium"
+                >
+                  Login here
+                </Link>
+              </span>
+            </div>
           </CardContent>
-          <CardFooter>
-          </CardFooter>
+          <CardFooter></CardFooter>
         </Card>
       </div>
     </div>

@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { FC } from "react";
 import { connectSocket } from "@/features/socket/socketSlice";
+import { AxiosError } from "axios";
 
 const Verify: FC = () => {
     const [searchParams] = useSearchParams()
@@ -14,8 +15,7 @@ const Verify: FC = () => {
     const navigate = useNavigate() 
 
     const token = searchParams.get("token");
-    console.log(searchParams, "search params");
-    console.log(token, "token");
+
 
     const { verifyRegisterMutation } = useAuth();
     const { mutateAsync: verifyRegisterMutate } = verifyRegisterMutation;
@@ -34,11 +34,14 @@ const Verify: FC = () => {
                     const { token, role } = res;
                     dispatch(setAccessToken({ token, role }));
                     dispatch(connectSocket({token}))
-                    navigate("/");
+                    toast.message("Please update Your profile first..")
+                    navigate("/profile"); 
                 }
             } catch (error) {
-                console.error("Verification failed", error);
-                toast.error("Verification failed. please try again later")
+                const axiosError = error as AxiosError<{ message?: string }>;
+                const message = axiosError.response?.data?.message || axiosError.message ||"Something went wrong. Please try again.";
+                toast.error(message);
+                navigate("/auth/signup")
             }
         };
 

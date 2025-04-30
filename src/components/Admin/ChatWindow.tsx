@@ -74,12 +74,12 @@ export const ChatWindow = ({ userId }: ChatWindowProps) => {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between py-2 border-b">
-        <h3 className="text-xl font-semibold">Chat with User </h3>
+        <h3 className="text-xl font-semibold font-tertiary">Chat with User </h3>
         {/* <button className="text-sm text-blue-500">End Chat</button> */}
       </div>
 
       {/* Chat messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 font-primary">
         {isLoading ? (
           <p className="text-gray-500">Loading messages...</p>
         ) : (

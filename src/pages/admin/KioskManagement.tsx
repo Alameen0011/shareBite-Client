@@ -66,10 +66,10 @@ const KioskManagement = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <Card className="p-6 shadow rounded-2xl bg-white">
+    <Card className="p-6 shadow rounded-2xl bg-white font-tertiary">
     {/*Card Header */}
     <CardHeader>
-      <CardTitle className="text-2xl font-semibold">
+      <CardTitle className="text-2xl font-semibold font-primary">
         Kiosk Management
       </CardTitle>
       <p className="text-sm text-muted-foreground">
@@ -105,7 +105,7 @@ const KioskManagement = () => {
           {kiosks.map((kiosk: any) => (
             <TableRow key={kiosk._id}>
               <TableCell className="font-medium">{kiosk.name}</TableCell>
-              <TableCell>{kiosk.location.address}</TableCell>
+              <TableCell > {kiosk.location.address.length > 30 ? `${kiosk.location.address.slice(0, 30)}...` : kiosk.location.address}</TableCell>
              
               <TableCell className="">
               

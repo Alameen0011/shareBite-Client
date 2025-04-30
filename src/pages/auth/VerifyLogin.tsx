@@ -1,6 +1,7 @@
 import { setAccessToken } from "@/features/auth/authSlice";
 import { connectSocket } from "@/features/socket/socketSlice";
 import { useAuth } from "@/hooks/useAuth";
+import { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -29,20 +30,19 @@ const VerifyLogin = () => {
 
             try {
                 const res = await verifyLoginMutate(token);
-                console.log(res,"response after verification")
                 if (res?.success) {
-                  toast(res?.message || "verified successfully");
-                  const { token, role } = res;
-                  console.log("Got token from successfull Response", token, role)
+                  const { token, role } = res
                   dispatch(setAccessToken({ token, role }));
-                  console.log("dispatcching to connect socket slice action")
                   dispatch(connectSocket({token}))
-                  navigate("/donor/dashboard");
+                  navigate("/");
+                  toast(res?.message || "verified successfully");
               }
                 
             } catch (error) {
-              console.error("Verification failed", error);
-              toast.error("Verification failed. please try again later")
+                    const axiosError = error as AxiosError<{ message?: string }>;
+                    const message = axiosError.response?.data?.message || axiosError.message ||"Something went wrong. Please try again.";
+                    toast.error(message);
+                    navigate("/auth/login")
 
             }
         }

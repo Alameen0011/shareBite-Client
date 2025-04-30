@@ -58,7 +58,7 @@ const ProfileDropdown = () => {
   return (
     <div className="relative" ref={dropdownRef}>
     <img
-      src={'lsjfs'}
+      src="/photo-1554050857-c84a8abdb5e2.avif"
       alt="avatar"
       className="w-10 h-10 rounded-full cursor-pointer border"
       onClick={() => setOpen((prev) => !prev)}

@@ -8,6 +8,9 @@ import { useGetAvailableDonations } from "@/hooks/useVolunteer";
 import { useVolunteer } from "@/hooks/useVolunteer";
 import { toast } from "sonner";
 import { Donation } from "@/types/donation";
+import Loading from "@/components/Loading";
+import CommonError from "@/components/CommonError";
+import { AxiosError } from "axios";
 
 const VolunteerDashboard = () => {
   const navigate = useNavigate();
@@ -24,11 +27,11 @@ const VolunteerDashboard = () => {
     isError,
     isLoading,
   } = useGetAvailableDonations({ lat, lng, radius });
-  
-   // Get live socket donations
+
+  // Get live socket donations
   const socketDonations = useVolunteerSocket(lat, lng);
 
-    // Merge + deduplicate
+  // Merge + deduplicate
   const mergedDonations: Donation[] = useMemo(() => {
     const map = new Map();
     [...initialDonations, ...socketDonations].forEach((d) => {
@@ -36,7 +39,6 @@ const VolunteerDashboard = () => {
     });
     return Array.from(map.values());
   }, [initialDonations, socketDonations]);
-
 
   // 1. Get volunteer geo-location
   useEffect(() => {
@@ -46,8 +48,7 @@ const VolunteerDashboard = () => {
     });
   }, []);
 
-
-// Handle claiming
+  // Handle claiming
   const handleClaim = async (donation: Donation) => {
     console.log(donation, "claimed");
     try {
@@ -62,69 +63,96 @@ const VolunteerDashboard = () => {
         });
       }
     } catch (error) {
-      console.log(error);
-      toast.error("Somethign wrong happened please try again later");
+      const axiosError = error as AxiosError<{ message?: string }>;
+      const message =
+        axiosError.response?.data?.message ||
+        axiosError.message ||
+        "Something went wrong. Please try again.";
+      toast.error(message);
     }
   };
 
-    // ------------------
+  // ------------------
   // UI
   // ------------------
 
   if (lat === null || lng === null) return <p>Getting location....</p>;
-  if (isLoading) return <p>Loading</p>;
-  if (isError) return <p>Error..</p>;
+  if (isLoading) return <Loading />;
+  if (isError)
+    return <CommonError message="Error fetching available donations" />;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10 grid grid-cols-1   gap-6">
+    <div className="max-w-5xl mx-auto px-4 py-10 font-primary">
+  <div className="flex flex-col-reverse lg:flex-row gap-6">
+    {/* Donation List */}
+    <div className="flex-1">
       {mergedDonations.length === 0 ? (
-        <p className="text-muted-foreground text-center">
-          No donations available nearby.
-        </p>
+        <div className="flex items-center justify-center h-[50vh]">
+          <p className="text-muted-foreground text-center text-lg">
+            No donations available nearby.
+          </p>
+        </div>
       ) : (
-        mergedDonations.map((donation) => (
-          <Card
-            key={donation._id}
-            className={`shadow-lg transition-all ${
-              donation.isSocketUpdate ? "ring-2 ring-green-400" : ""
-            }`}
-          >
-            <CardContent className="p-4 space-y-2">
-              <div className="flex gap-4">
-                <img
-                  src={donation.image}
-                  alt={donation.type}
-                  className="w-20 h-20 object-cover rounded-xl"
-                />
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold capitalize">
-                    {donation.title}
-                    {donation.isSocketUpdate && (
-                      <span className="text-sm text-green-500 ml-2">• New</span>
-                    )}
-                  </h3>
-                  <p>📍{donation.pickupLocation.address}</p>
-                  <p>
-                    🕒{" "}
-                    {formatDistanceToNow(new Date(donation.createdAt ?? "" ), {
-                      addSuffix: true,
-                    })}
-                  </p>
-                  <p>📦 Quantity: {donation.quantity}</p>
+        <div className="grid grid-cols-1 gap-6">
+          {mergedDonations.map((donation) => (
+            <Card
+              key={donation._id}
+              className={`shadow-lg transition-all ${
+                donation.isSocketUpdate ? "ring-2 ring-green-400" : ""
+              }`}
+            >
+              <CardContent className="p-4 space-y-2 font-tertiary">
+                <div className="flex gap-4">
+                  <img
+                    src={donation.image}
+                    alt={donation.type}
+                    className="w-20 h-20 object-cover rounded-xl"
+                  />
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold capitalize">
+                      {donation.title}
+                      {donation.isSocketUpdate && (
+                        <span className="text-sm text-green-500 ml-2">
+                          • New
+                        </span>
+                      )}
+                    </h3>
+                    <p>📍{donation.pickupLocation.address}</p>
+                    <p>
+                      🕒{" "}
+                      {formatDistanceToNow(new Date(donation.createdAt ?? ""), {
+                        addSuffix: true,
+                      })}
+                    </p>
+                    <p>📦 Quantity: {donation.quantity}</p>
+                  </div>
                 </div>
-              </div>
 
-              <Button
-                className=" w-full mt-2 bg-green-500"
-                onClick={() => handleClaim(donation)}
-              >
-                Claim
-              </Button>
-            </CardContent>
-          </Card>
-        ))
+                <Button
+                  className="w-full mt-2 bg-green-500"
+                  onClick={() => handleClaim(donation)}
+                >
+                  Claim
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
+
+    {/* Location Box */}
+    <div className="w-full lg:w-60 flex-shrink-0">
+      <div className="bg-white shadow-md rounded-md p-4 text-sm font-medium text-gray-700">
+        📍 Location:
+        <div>Lat: {lat?.toFixed(5)}</div>
+        <div>Lng: {lng?.toFixed(5)}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
   );
 };
 

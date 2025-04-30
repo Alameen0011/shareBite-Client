@@ -13,7 +13,7 @@ const DeliverySuccess = () => {
 
   useEffect(() => {
     // Stop confetti after 4 seconds
-    const timer = setTimeout(() => setShowConfetti(false), 10000);
+    const timer = setTimeout(() => setShowConfetti(false), 100000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -25,15 +25,15 @@ const DeliverySuccess = () => {
     <div className="relative flex items-center justify-center min-h-[80vh] p-4">
       {showConfetti && <Confetti width={width} height={height} numberOfPieces={250} />}
       
-      <Card className="w-full max-w-md text-center shadow-xl z-10">
+      <Card className="w-full max-w-md text-center shadow-xl z-10 font-primary">
         <CardContent className="p-6 flex flex-col items-center">
           <CheckCircle2 className="text-green-500 w-16 h-16 mb-4" />
           <h2 className="text-2xl font-semibold mb-2">Delivery Completed!</h2>
           <p className="text-muted-foreground mb-6">
-            Thank you for delivering the food to the kiosk. Your effort makes a real difference!
+          "Every action counts. You just made someone's day better. Thank you!""
           </p>
           <Button onClick={handleBack} className="w-full sm:w-auto">
-            Back to Dashboard
+          Continue Helping
           </Button>
         </CardContent>
       </Card>
