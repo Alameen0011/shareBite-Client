@@ -1,13 +1,12 @@
-import { RootState } from '@/app/store';
 import { logout } from '@/features/auth/authSlice';
 import { disconnectSocket } from '@/features/socket/socketSlice';
 import { useAuth } from '@/hooks/useAuth';
-import React, { useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useRef, useState } from 'react'
+import { useDispatch, } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-const ProfileDropdown = () => {
+const ProfileDropdown: React.FC = () => {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
@@ -17,13 +16,6 @@ const ProfileDropdown = () => {
 
   const {mutateAsync} = logoutMutation
 
-  const { isAuthenticated,role  } = useSelector((state: RootState) => state.auth );
-
-    // const getAvatar = () => {
-    //     if (user?.avatarUrl) return user.avatarUrl;
-    //     const name = user?.name || "User";
-    //     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
-    //   };
 
       useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
