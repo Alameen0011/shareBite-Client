@@ -45,13 +45,9 @@ const Login: FC = () => {
         toast.error(res?.message || "Login failed. please try again later");
       }
     } catch (error) {
-      const axiosError = error as AxiosError<{ message?: string }>;
-      const message =
-        axiosError.response?.data?.message ||
-        axiosError.message ||
-        "Something went wrong. Please try again.";
-
-      if (axiosError.response?.data?.error === "blocked") {
+      const axiosError = error as AxiosError<{ message?: string, error?: string }>;
+      const message =  axiosError.response?.data?.message || axiosError.message || "Something went wrong. Please try again.";
+     if (axiosError.response?.data?.error === "blocked") {
         toast.error("Your account has been blocked.");
         // Optional: redirect to a blocked screen
         navigate("/blocked");

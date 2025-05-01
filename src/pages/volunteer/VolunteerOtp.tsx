@@ -4,6 +4,7 @@ import { Utensils } from "lucide-react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import React from "react";
 
 const VolunteerOtp = () => {
   const { id: urlParamId } = useParams();
@@ -20,7 +21,7 @@ const VolunteerOtp = () => {
   const { mutateAsync } = verifyAndPickup;
 
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const isOtpComplete = otp.every((digit) => digit !== "");
 
@@ -44,7 +45,7 @@ const VolunteerOtp = () => {
     }
   };
 
-  const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       // Move to previous input on backspace if current input is empty
       inputRefs.current[index - 1]?.focus();
@@ -104,7 +105,9 @@ const VolunteerOtp = () => {
           {otp.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => (inputRefs.current[index] = el)}
+              ref={(el) => {
+                inputRefs.current[index] = el;
+              }}
               type="text"
               maxLength={1}
               value={digit}

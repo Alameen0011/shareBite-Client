@@ -14,7 +14,8 @@ const socketSlice = createSlice({
   name: "socket",
   initialState,
   reducers: {
-    connectSocket: (state, action: PayloadAction<{ token: string }>) => {
+    connectSocket: (_state, action: PayloadAction<{ token: string }>) => {
+       
         initializeSocket(action.payload.token)
 
     },

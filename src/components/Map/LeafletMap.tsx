@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { LatLngTuple } from 'leaflet';
 
-const center = [10.5775104, 76.1987072];
+const center: LatLngTuple = [10.5775104, 76.1987072];
 
 interface LeafletMapProps {
   onLocationSelect: (location: {

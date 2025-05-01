@@ -1,4 +1,4 @@
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import axiosInstance from "@/api/axiosInstance";
 import { useDispatch } from "react-redux";
 import { setAccessToken } from "@/features/auth/authSlice";
@@ -10,11 +10,11 @@ const GoogleAuth = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
 
-  const handleGoogleLogin = async (credentialResponse) => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
-    console.log(clientId, "Client IDDD");
-
+  const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse.credential) {
+      toast.error("Google login failed. Please try again.");
+      return;
+    }
     try {
       const response = await axiosInstance.post("/user/google-auth", {
         credential: credentialResponse.credential,
@@ -27,7 +27,7 @@ const GoogleAuth = () => {
       console.log("Got token from successfull Response", token, role);
       dispatch(setAccessToken({ token, role }));
     } catch (error) {
-      const axiosError = error as AxiosError<{ message?: string }>;
+      const axiosError = error as AxiosError<{ message?: string, error?: string }>;
       const message = axiosError.response?.data?.message || axiosError.message || "Something went wrong. Please try again.";
 
       if (axiosError.response?.data?.error === "blocked") {
@@ -43,7 +43,7 @@ const GoogleAuth = () => {
   return (
     <GoogleLogin
       onSuccess={handleGoogleLogin}
-      onError={(error) => console.log("Login Failed:", error)}
+      onError={() => console.log("Google login failed.")}
     />
   );
 };

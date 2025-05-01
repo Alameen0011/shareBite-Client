@@ -14,6 +14,18 @@ interface PickupLocation {
     address: string;
   }
 
+  // kiosk?: {
+  //   name?: string;
+  // };
+  // donor?: {
+  //   email?: string;
+  // };
+  // volunteer?: {
+  //   name?: string;
+  //   email?: string;
+  //   phone?: string;
+  // };
+
 export interface Donation {
     _id: string;
     pickupLocation: PickupLocation
@@ -37,6 +49,7 @@ export interface Donation {
     otp:string
     createdAt: string;
   // Optional:
+  
   isSocketUpdate?: boolean; //optional flag injected via socket
   distance?: number;
   updatedAt?: string;

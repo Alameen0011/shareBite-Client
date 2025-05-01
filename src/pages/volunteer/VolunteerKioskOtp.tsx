@@ -1,9 +1,10 @@
 import { useVolunteer } from "@/hooks/useVolunteer";
 import { AxiosError } from "axios";
 import { Utensils } from "lucide-react";
-import { useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import React from "react";
 
 const VolunteerKioskOtp = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,7 +32,7 @@ const VolunteerKioskOtp = () => {
     }
   };
 
-  const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       // Move to previous input on backspace if current input is empty
       inputRefs.current[index - 1]?.focus();
@@ -89,7 +90,9 @@ const VolunteerKioskOtp = () => {
           {otp.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => (inputRefs.current[index] = el)}
+              ref={(el) => {
+                inputRefs.current[index] = el;
+              }}
               type="text"
               maxLength={1}
               value={digit}

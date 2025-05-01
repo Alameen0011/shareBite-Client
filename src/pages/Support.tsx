@@ -1,9 +1,8 @@
 import { getSocket } from "@/api/socket";
 import { RootState } from "@/app/store";
-import { Button } from "@/components/ui/button";
 import { useGetMessages, useMessage } from "@/hooks/useMessage";
 import { getUserIdFromToken } from "@/utils/jwtDecode";
-import { PlusCircle, Send } from "lucide-react";
+import {  Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";

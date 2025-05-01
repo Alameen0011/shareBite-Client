@@ -1,5 +1,5 @@
 import axiosInstance from "@/api/axiosInstance"
-import { GetDonationResponse, GetSingleDonationResponse, UpdateDonationArgs, UpdateDonationResponse } from "@/types/donation"
+import { GetDonationResponse, UpdateDonationArgs, UpdateDonationResponse } from "@/types/donation"
 import { donationSchema } from "@/validations/donation/addDonation";
 import { useMutation, useQuery, useQueryClient} from "@tanstack/react-query"
 import { z } from "zod";
@@ -67,7 +67,7 @@ export const useDonation = () => {
 }
 
 export const useSingleDonation = (id: string) => {
-    return useQuery<GetSingleDonationResponse>({
+    return useQuery({
         queryKey: ["donation", id],
         queryFn: async () => {
             const response = await axiosInstance.get(`/donor/donations/${id}` )

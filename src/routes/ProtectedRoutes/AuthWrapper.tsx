@@ -14,7 +14,7 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ roles }) => {
   console.log("Inside auth wrapper")
 
   if (isAuthenticated) {
-    if (roles.includes(role)) {
+    if (roles.includes(role as "donor" | "volunteer" | "admin")) {
       return <Navigate to="/" replace />;
     }
   } else {
