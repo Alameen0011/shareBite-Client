@@ -99,7 +99,7 @@ const DonorDashboard = () => {
       
           <div className="flex items-center justify-between text-sm">
             <span className="px-2 py-1 rounded-full text-white bg-black dark:bg-green-600 text-xs">
-            {(donation.status as string)?.replaceAll("_", " ")}
+            {donation.status.replace("_", " ")} 
             </span>
             <span className="text-gray-500 dark:text-gray-400 text-xs">
               {IsoToReadableFormat(donation.createdAt)}
