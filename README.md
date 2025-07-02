@@ -7,7 +7,7 @@
 ## 🚀 Features
 
 - 👤 **Role-Based Access**: Donor, Volunteer, Admin
-- 📍 **Live Map Tracking**: Real-time location sharing and route guidance for volunteers using Mapbox
+- 📍 **Live Map Tracking**: Real-time location sharing and route guidance for volunteers using leaflet.js
 - ⚡ **Socket.IO Integration**: Instant donation claiming and notifications
 - 🛡 **Authentication**: Secure login with JWT tokens
 - 🧑‍💻 **Admin Dashboard**:
@@ -29,8 +29,8 @@
 - React + TypeScript
 - Tailwind CSS + ShadCN/UI
 - Redux Toolkit + React Query
-- Mapbox GL / React Leaflet
-- WebRTC (Video call)
+- Leaflet.js / React Leaflet
+- Zego Cloud
 - Socket.IO Client
 
 ### Backend
