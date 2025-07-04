@@ -76,6 +76,12 @@ const Signup: FC = () => {
             </div>
           </CardHeader>
 
+   <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 text-sm rounded-md mb-2">
+  ⚠️ We're sorry 😥🥲 Our servers are hosted on a free Render plan, so responses may take 10–15 seconds.
+  Please wait after submitting your email — don't give up on us! 💚 Your magic link will arrive soon.
+</div>
+
+
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit(handleUserRegistration)}>
               <div className="space-y-2">
