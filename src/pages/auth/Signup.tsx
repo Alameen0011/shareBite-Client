@@ -77,8 +77,8 @@ const Signup: FC = () => {
           </CardHeader>
 
    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 text-sm rounded-md mb-2">
-  ⚠️ We're sorry 😥🥲 Our servers are hosted on a free Render plan, so responses may take 10–15 seconds.
-  Please wait after submitting your email — don't give up on us! 💚 Your magic link will arrive soon.
+    ⚠️ Just a heads-up — since we're using a free server, there might be a short delay in sending your magic link.
+  Please wait patiently — it's on the way! 💚
 </div>
 
 
